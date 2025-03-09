@@ -34,8 +34,6 @@ public class ApplicationConfig {
         return args ->{
             createFull();
             if(userRepository.findByUsername("admin").isEmpty()){
-                
-                
                 Set<RoleEntity> roles = new HashSet<>(this.roleRepository.findAll());
                 
                 UserEntity userOrigin = UserEntity.builder()    

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserResponse;
