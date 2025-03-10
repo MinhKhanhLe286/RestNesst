@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     
     private final String[] PUBLIC_END_POINT = {"/api/users", "/auth/token", "/auth/introspect"};
+    private final String[] PUBLIC_END_POINT_TEST = {"/api/categories"};
     
     @Value("${security.secret}")
     private String SIGNER_KEY ;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.GET, "/hello","/api/users").permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll()
                 .anyRequest().authenticated());
         

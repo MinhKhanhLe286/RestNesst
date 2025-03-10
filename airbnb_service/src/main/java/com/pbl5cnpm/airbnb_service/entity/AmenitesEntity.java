@@ -2,8 +2,6 @@ package com.pbl5cnpm.airbnb_service.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,12 +22,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "amenites")
-public class Amenites extends BaseEntity {
+public class AmenitesEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    
     String name;
 
-    @ManyToMany(mappedBy = "amenites")
-    List<Listing> listings = new ArrayList<>();
+    @ManyToMany(mappedBy = "amenitesEntities") // ✅ Đổi tên cho đúng với `ListingEntity`
+    List<ListingEntity> listings = new ArrayList<>();
 }

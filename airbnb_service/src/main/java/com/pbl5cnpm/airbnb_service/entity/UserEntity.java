@@ -40,5 +40,5 @@ public class UserEntity extends BaseEntity {
     )
     Set<RoleEntity> roles  = new HashSet<>();
     @OneToMany(mappedBy = "host")
-    List<Listing> listings = new ArrayList<>();
+    List<ListingEntity> listings = new ArrayList<>();
 }
