@@ -1,4 +1,7 @@
-package com.pbl5cnpm.airbnb_service.dto.Response;
+package com.pbl5cnpm.airbnb_service.dto.Request;
+
+import org.hibernate.annotations.Filter;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +12,11 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoriesResponse {
-    Long id;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AmenitiesRequest {
     String name;
     String thumnailUrl;
-    Integer position;
 }

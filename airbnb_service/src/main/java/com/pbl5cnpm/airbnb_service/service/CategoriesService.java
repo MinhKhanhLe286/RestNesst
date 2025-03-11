@@ -1,5 +1,7 @@
 package com.pbl5cnpm.airbnb_service.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.pbl5cnpm.airbnb_service.dto.Request.CategoriesRequest;
@@ -23,5 +25,13 @@ public class CategoriesService {
         CategoriesEntity categoriesEntity = categoriesMapper.toCategoriesEntity(categoriesRequest);
                     categoriesEntity.setDeleted(false);
         return this.categoriesMapper.tCategoriesResponse(this.categoriesRepository.save(categoriesEntity));
+    }
+
+    public List<CategoriesResponse> handleFindAll(){
+        return this.categoriesRepository
+                    .findAll()
+                    .stream()
+                    .map(category -> categoriesMapper.tCategoriesResponse(category) )
+                    .toList();
     }
 }

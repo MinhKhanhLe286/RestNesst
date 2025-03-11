@@ -1,4 +1,5 @@
 package com.pbl5cnpm.airbnb_service.dto.Response;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +14,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoriesResponse {
+public class AmenitiesResponse {
     Long id;
     String name;
     String thumnailUrl;
-    Integer position;
 }

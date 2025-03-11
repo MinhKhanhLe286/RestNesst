@@ -27,7 +27,8 @@ public class ListingEntity extends BaseEntity {
     Double price;
     Double area;
     String status;
-
+    @Column(columnDefinition = "boolean default false")
+    Boolean deleted; 
     @ManyToOne
     @JoinColumn(name = "host_id")
     private UserEntity host;
@@ -46,8 +47,7 @@ public class ListingEntity extends BaseEntity {
         joinColumns = @JoinColumn(name = "listing_id"),
         inverseJoinColumns = @JoinColumn(name = "amenites_id")
     )
-    List<AmenitesEntity> amenitesEntities; // ✅ Đảm bảo tên này khớp với `mappedBy` trong `AmenitesEntity`
-
-    @OneToMany(mappedBy = "listing")
+    List<AmenitesEntity> amenitesEntities; 
+    @OneToMany(mappedBy = "listingEntity")
     private List<ImagesEntity> imagesEntities;
 }

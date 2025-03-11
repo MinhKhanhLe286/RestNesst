@@ -31,7 +31,10 @@ public class CategoriesEntity extends BaseEntity {
     Long id;
     @Column(unique = true)
     String name;
+    @Column(nullable = false)
+    String thumnailUrl;
     Boolean deleted;
+    Integer position;
     @ManyToMany(mappedBy = "categoriesEntities")
     List<ListingEntity> listings;
 }

@@ -7,16 +7,19 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "images")
 public class ImagesEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    
+    @Column(unique = true)
     String imageUrl;
 
+    @Column(columnDefinition = "boolean default false")
+    Boolean deleted;
     @ManyToOne
-    @JoinColumn(name = "listing_id") //  Đảm bảo có tên cột chính xác
-    private ListingEntity listing; //  Thêm thuộc tính này để khớp với `mappedBy`
+    @JoinColumn(name = "listing_id", nullable = true) //  Đảm bảo có tên cột chính xác
+    private ListingEntity listingEntity; //  Thêm thuộc tính này để khớp với `mappedBy`
 }

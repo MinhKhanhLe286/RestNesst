@@ -35,9 +35,10 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Thêm cấu hình CORS đúng cách
-            .csrf(AbstractHttpConfigurer::disable) // Tắt CSRF nếu không cần
+            .csrf(AbstractHttpConfigurer::disable) 
             .authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.GET, "/hello", "/api/users").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/hello", "/api/users", "/api/categories").permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll()
                 .anyRequest().authenticated()
@@ -50,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:3000")); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); 
