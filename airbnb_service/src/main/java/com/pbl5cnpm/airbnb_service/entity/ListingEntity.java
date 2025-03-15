@@ -23,11 +23,10 @@ public class ListingEntity extends BaseEntity {
     String description;
     String address;
     String city;
-    String county;
     Double price;
     Double area;
     String status;
-    @Column(columnDefinition = "boolean default false")
+    Boolean access;
     Boolean deleted; 
     @ManyToOne
     @JoinColumn(name = "host_id")
@@ -48,6 +47,11 @@ public class ListingEntity extends BaseEntity {
         inverseJoinColumns = @JoinColumn(name = "amenites_id")
     )
     List<AmenitesEntity> amenitesEntities; 
+    
     @OneToMany(mappedBy = "listingEntity")
     private List<ImagesEntity> imagesEntities;
+
+    @ManyToOne
+    @JoinColumn(name = "country_id", nullable = false)
+    CountriesEntity countriesEntity;
 }

@@ -1,4 +1,4 @@
-package com.pbl5cnpm.airbnb_service.Exception;
+package com.pbl5cnpm.airbnb_service.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

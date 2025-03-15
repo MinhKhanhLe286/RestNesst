@@ -27,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     
     private final String[] PUBLIC_END_POINT = {"/api/users", "/auth/token", "/auth/introspect"};
-    private final String[] PUBLIC_END_POINT_TEST = {"/api/categories"};
+    private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
     
     @Value("${security.secret}")
     private String SIGNER_KEY ;
@@ -38,9 +38,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) 
             .authorizeHttpRequests(request -> request
                 .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/hello", "/api/users", "/api/categories").permitAll()
+                .requestMatchers(HttpMethod.GET, "/hello", "/api/users", "/api/categories", "/api/amenities").permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
-                .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll() // main
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(auth2 -> auth2.jwt(JwtConfigurer -> JwtConfigurer.decoder(jwtDecoder())));

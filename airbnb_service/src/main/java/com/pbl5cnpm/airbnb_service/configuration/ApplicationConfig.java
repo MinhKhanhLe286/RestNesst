@@ -103,6 +103,7 @@ public class ApplicationConfig {
             AmenitesEntity entity = AmenitesEntity.builder()
                                     .name(name)
                                     .thumnailUrl("/uploads/"+thumnailUrl)
+                                    .deleted(false)
                                     .build();
             this.amenitiesRepository.save(entity);
         }
