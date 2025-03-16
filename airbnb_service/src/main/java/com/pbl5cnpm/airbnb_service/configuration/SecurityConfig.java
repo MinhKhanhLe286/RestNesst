@@ -28,17 +28,18 @@ public class SecurityConfig {
     
     private final String[] PUBLIC_END_POINT = {"/api/users", "/auth/token", "/auth/introspect"};
     private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
+    private final String[] PULIC_GET = {"/hello", "/api/users", "/api/categories", "/api/amenities","/api/countries"};
     
     @Value("${security.secret}")
     private String SIGNER_KEY ;
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Thêm cấu hình CORS đúng cách
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             .csrf(AbstractHttpConfigurer::disable) 
             .authorizeHttpRequests(request -> request
                 .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/hello", "/api/users", "/api/categories", "/api/amenities").permitAll()
+                .requestMatchers(HttpMethod.GET, PULIC_GET ).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll() // main
                 .anyRequest().authenticated()

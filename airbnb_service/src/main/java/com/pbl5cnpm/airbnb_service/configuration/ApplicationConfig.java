@@ -12,11 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.pbl5cnpm.airbnb_service.entity.AmenitesEntity;
 import com.pbl5cnpm.airbnb_service.entity.CategoriesEntity;
+import com.pbl5cnpm.airbnb_service.entity.CountriesEntity;
 import com.pbl5cnpm.airbnb_service.entity.RoleEntity;
 import com.pbl5cnpm.airbnb_service.entity.UserEntity;
 import com.pbl5cnpm.airbnb_service.enums.RoleName;
 import com.pbl5cnpm.airbnb_service.repository.AmenitiesRepository;
 import com.pbl5cnpm.airbnb_service.repository.CategoriesRepository;
+import com.pbl5cnpm.airbnb_service.repository.CountriesRepository;
 import com.pbl5cnpm.airbnb_service.repository.RoleRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.RoleService;
@@ -38,12 +40,14 @@ public class ApplicationConfig {
     PasswordEncoder encoder;
     CategoriesRepository categoriesRepository; 
     AmenitiesRepository amenitiesRepository;
+    CountriesRepository countriesRepository;
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository){
         return args ->{
             createBaseCategoies();
             createFullRole();
             createdBaseAmenities();
+            createdBaseCountries();
             if(userRepository.findByUsername("admin").isEmpty()){
                 Set<RoleEntity> roles = new HashSet<>(this.roleRepository.findAll());
                 
@@ -106,6 +110,25 @@ public class ApplicationConfig {
                                     .deleted(false)
                                     .build();
             this.amenitiesRepository.save(entity);
+        }
+    }
+    private void createdBaseCountries(){
+        createdBaseCountry("Việt Nam");
+        createdBaseCountry("Thái Lan");
+        createdBaseCountry("Malaysia");
+        createdBaseCountry("Hoa Kỳ");
+        createdBaseCountry("Tây Ba Nha");
+        createdBaseCountry("Ý");
+        createdBaseCountry("Canada");
+        createdBaseCountry("Mexico");
+    }
+    private void createdBaseCountry(String name){
+        if(this.countriesRepository.findByName(name).isEmpty()){
+            CountriesEntity entity = CountriesEntity.builder()
+                                    .name(name)
+                                    .deleted(false)
+                                    .build();
+            this.countriesRepository.save(entity);
         }
     }
 }

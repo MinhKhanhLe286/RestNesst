@@ -1,8 +1,11 @@
 package com.pbl5cnpm.airbnb_service.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +36,12 @@ public class CountriesController {
                                                     .message("create country success!")
                                                     .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+    @GetMapping("/countries")
+    public ApiResponse<List<CoutriesResponse>> getallCountries(){
+        return ApiResponse.<List<CoutriesResponse>>builder()
+                    .result(this.coutriesService.handleGetAll())
+                    .message("get all countries successfully!")
+                    .build();
     }
 }
