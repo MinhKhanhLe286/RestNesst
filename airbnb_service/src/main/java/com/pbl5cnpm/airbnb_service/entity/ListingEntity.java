@@ -1,7 +1,7 @@
 package com.pbl5cnpm.airbnb_service.entity;
 
+import java.time.LocalDate;
 import java.util.List;
-import com.pbl5cnpm.airbnb_service.enums.StatusRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "listings")
 public class ListingEntity extends BaseEntity {
@@ -24,10 +25,14 @@ public class ListingEntity extends BaseEntity {
     String address;
     String city;
     Double price;
-    Double area;
-    String status;
+    String area;
+    Boolean isActive;
     Boolean access;
     Boolean deleted; 
+    String avgStart;
+    Boolean popular;
+    LocalDate startDate;
+    LocalDate endDate;
     @ManyToOne
     @JoinColumn(name = "host_id")
     private UserEntity host;
@@ -48,10 +53,10 @@ public class ListingEntity extends BaseEntity {
     )
     List<AmenitesEntity> amenitesEntities; 
     
-    @OneToMany(mappedBy = "listingEntity")
-    private List<ImagesEntity> imagesEntities;
+    @OneToMany(mappedBy = "listingEntity", cascade = CascadeType.ALL)
+    List<ImagesEntity> imagesEntities;
 
     @ManyToOne
-    @JoinColumn(name = "country_id", nullable = false)
+    @JoinColumn(name = "country_id")
     CountriesEntity countriesEntity;
 }

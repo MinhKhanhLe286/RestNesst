@@ -16,10 +16,8 @@ public class ImagesEntity extends BaseEntity {
     Long id;
     @Column(unique = true)
     String imageUrl;
-
-    @Column(columnDefinition = "boolean default false")
     Boolean deleted;
     @ManyToOne
-    @JoinColumn(name = "listing_id", nullable = true) //  Đảm bảo có tên cột chính xác
-    private ListingEntity listingEntity; //  Thêm thuộc tính này để khớp với `mappedBy`
+    @JoinColumn(name = "listing_id") 
+    private ListingEntity listingEntity; 
 }

@@ -26,9 +26,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     
-    private final String[] PUBLIC_END_POINT = {"/api/users", "/auth/token", "/auth/introspect"};
+    private final String[] PUBLIC_POST = {"/api/users", "/auth/token", "/auth/introspect"};
     private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
-    private final String[] PULIC_GET = {"/hello", "/api/users", "/api/categories", "/api/amenities","/api/countries"};
+    private final String[] PULIC_GET = {"/hello", "/api/users", "/api/categories", "/api/amenities","/api/countries", "/api/listings"};
     
     @Value("${security.secret}")
     private String SIGNER_KEY ;
@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET, PULIC_GET ).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
-                .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll() // main
+                .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll() // main
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(auth2 -> auth2.jwt(JwtConfigurer -> JwtConfigurer.decoder(jwtDecoder())));
@@ -74,17 +74,3 @@ public class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(keySpec).macAlgorithm(MacAlgorithm.HS512).build();
     }
 }
-// @Bean
-    // SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        
-    //     httpSecurity.authorizeHttpRequests(request -> request
-    //             .requestMatchers(HttpMethod.GET, "/hello","/api/users").permitAll()
-    //             .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
-    //             .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT).permitAll()
-    //             .anyRequest().authenticated());
-        
-    //     httpSecurity.oauth2ResourceServer(auth2 -> auth2.jwt(JwtConfigurer -> JwtConfigurer.decoder(jwtDecoder())));
-    //     httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        
-    //     return httpSecurity.build();
-    // }
