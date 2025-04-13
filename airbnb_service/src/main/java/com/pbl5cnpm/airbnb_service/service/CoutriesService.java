@@ -20,8 +20,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CoutriesService {
-
-    private final AirbnbServiceApplication airbnbServiceApplication;
     CountriesRepository coutriesRepository;
     CountriesMapper mapper;
 

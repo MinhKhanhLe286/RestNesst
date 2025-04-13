@@ -68,7 +68,9 @@ public class ApplicationConfig {
             createFullRole();
             createdBaseAmenities();
             createdBaseCountries();
-            createdBaseListing();
+            if(this.listingsRepository.findAll().size() == 0){
+                createdBaseListing();
+            }
         };
     }
 

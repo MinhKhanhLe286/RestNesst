@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
+import com.pbl5cnpm.airbnb_service.exception.AppException;
+import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.mapper.ListingMapper;
 import com.pbl5cnpm.airbnb_service.repository.ListingsRepository;
 
@@ -21,4 +23,10 @@ public class ListingsServices {
         
         return entitys.stream().map(listingMapper::toResponse).toList();
     }
+    public ListingsResponse getDetail(Long id) {
+        ListingEntity entity = this.listingsRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.LISTING_NOT_EXISTED));
+        return this.listingMapper.toResponse(entity);
+    }
+    
 }

@@ -3,6 +3,7 @@ package com.pbl5cnpm.airbnb_service.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,5 +26,13 @@ public class ListingsController {
                                 .result(this.listingsServices.handleGetAll())
                                 .build();
         return apiResponse;
+    }
+    @GetMapping("/listings/{id}")
+    public ApiResponse<ListingsResponse> getDetail(@PathVariable Long id){
+        return ApiResponse.<ListingsResponse>builder()
+                .code(200)
+                .message("get detail successfully!")
+                .result(this.listingsServices.getDetail(id))
+                .build();
     }
 }

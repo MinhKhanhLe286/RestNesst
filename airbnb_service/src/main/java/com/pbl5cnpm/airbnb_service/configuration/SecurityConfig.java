@@ -28,7 +28,8 @@ public class SecurityConfig {
     
     private final String[] PUBLIC_POST = {"/api/users", "/auth/token", "/auth/introspect"};
     private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
-    private final String[] PULIC_GET = {"/hello", "/api/users", "/api/categories", "/api/amenities","/api/countries", "/api/listings"};
+    private final String[] PULIC_GET = {"/hello", "/api/users", "/api/categories", "/api/amenities","/api/countries",
+                                         "/api/listings", "/api/listings/{id}"};
     
     @Value("${security.secret}")
     private String SIGNER_KEY ;
