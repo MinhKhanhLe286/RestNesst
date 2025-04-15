@@ -29,13 +29,14 @@ public class ListingEntity extends BaseEntity {
     Boolean isActive;
     Boolean access;
     Boolean deleted; 
-    String avgStart;
+    Double avgStart;
     Boolean popular;
     LocalDate startDate;
     LocalDate endDate;
+    Integer position;
     @ManyToOne
     @JoinColumn(name = "host_id")
-    private UserEntity host;
+    UserEntity host;
     
     @ManyToMany
     @JoinTable(
@@ -59,4 +60,7 @@ public class ListingEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "country_id")
     CountriesEntity countriesEntity;
+
+    @OneToMany(mappedBy = "listingEntity", cascade = CascadeType.ALL)
+    List<ReviewEntity> reviews;
 }

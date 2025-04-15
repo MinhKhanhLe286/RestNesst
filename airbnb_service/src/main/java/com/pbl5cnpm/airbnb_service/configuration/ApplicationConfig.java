@@ -16,6 +16,7 @@ import com.pbl5cnpm.airbnb_service.entity.CategoriesEntity;
 import com.pbl5cnpm.airbnb_service.entity.CountriesEntity;
 import com.pbl5cnpm.airbnb_service.entity.ImagesEntity;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
+import com.pbl5cnpm.airbnb_service.entity.ReviewEntity;
 import com.pbl5cnpm.airbnb_service.entity.RoleEntity;
 import com.pbl5cnpm.airbnb_service.entity.UserEntity;
 import com.pbl5cnpm.airbnb_service.enums.RoleName;
@@ -25,6 +26,7 @@ import com.pbl5cnpm.airbnb_service.repository.AmenitiesRepository;
 import com.pbl5cnpm.airbnb_service.repository.CategoriesRepository;
 import com.pbl5cnpm.airbnb_service.repository.CountriesRepository;
 import com.pbl5cnpm.airbnb_service.repository.ListingsRepository;
+import com.pbl5cnpm.airbnb_service.repository.ReviewsRepository;
 import com.pbl5cnpm.airbnb_service.repository.RoleRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.RoleService;
@@ -48,7 +50,7 @@ public class ApplicationConfig {
     CountriesRepository countriesRepository;
     ListingsRepository listingsRepository;
     UserRepository userRepository;
-
+    ReviewsRepository reviewsRepository;
     @Bean
     ApplicationRunner applicationRunner() {
         return args -> {
@@ -70,7 +72,10 @@ public class ApplicationConfig {
             createdBaseCountries();
             if(this.listingsRepository.findAll().size() == 0){
                 createdBaseListing();
+                createdBaseListing2();
+                createdReview();
             }
+            
         };
     }
 
@@ -177,7 +182,7 @@ public class ApplicationConfig {
                 .area("50 m2")
                 .deleted(false)
                 .popular(true)
-                .startDate(LocalDate.parse("2025-04-25"))
+                .startDate(LocalDate.parse("2025-04-15"))
                 .endDate(LocalDate.parse("2025-05-01"))
                 .host(host)
                 .isActive(true)
@@ -185,6 +190,8 @@ public class ApplicationConfig {
                 .amenitesEntities(amenitesEntities)
                 .imagesEntities(imagesEntities)
                 .countriesEntity(countriesEntity)
+                .position(1)
+                .avgStart(4.9)
                 .build();
         // Gán listing cho từng ảnh
             imagesEntities.forEach(img -> img.setListingEntity(entity));
@@ -192,5 +199,69 @@ public class ApplicationConfig {
 
             // Lưu listing (và cascade ảnh nếu có)
             this.listingsRepository.save(entity);
+    }
+    private void createdBaseListing2() {
+        String description = """
+                        Có 5 loại phòng trong biệt thự Ngân Phú: Phòng đôi, phòng 3 người, phòng đơn, phòng 2 giường đơn và phòng 4 người.
+                        Nằm ở vị trí lý tưởng ở một vị trí tuyệt vời chỉ cách trung tâm Hội An 2 km và cách bãi biển Cửa Đại 2 km,
+                        với phòng hiện đại đẹp mắt và hiện đại yên tĩnh tuyệt đẹp, nhà của chúng tôi là nơi tốt nhất ở Hội An
+                        cho những ai muốn tận hưởng một kỳ nghỉ thoải mái trong bầu không khí ấm cúng như ở nhà.
+                        """;
+        ImagesEntity image1 = ImagesEntity.builder()
+                .imageUrl("uploads/anh11")
+                .deleted(false)
+                .build();
+        ImagesEntity image2 = ImagesEntity.builder()
+                .imageUrl("uploads/anh22")
+                .deleted(false)
+                .build();
+        UserEntity host = this.userRepository.findByUsername("admin")
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_VALID));
+        List<CategoriesEntity> categoriesEntities = this.categoriesRepository.findAll();
+        List<AmenitesEntity> amenitesEntities = this.amenitiesRepository.findAll();
+        List<ImagesEntity> imagesEntities = List.of(image1, image2);
+        CountriesEntity countriesEntity = this.countriesRepository.findByName("Việt Nam")
+                .orElseThrow(() -> new RuntimeException("k tim thay country viet nam trong database"));
+        ListingEntity entity = ListingEntity.builder()
+                .title("Nhà cho thuê")
+                .address("Phố Cổ Hội An")
+                .city("Quảng Nam")
+                .price(100.5)
+                .access(true)
+                .area("75 m2")
+                .deleted(false)
+                .popular(true)
+                .startDate(LocalDate.parse("2025-04-13"))
+                .endDate(LocalDate.parse("2025-05-01"))
+                .host(host)
+                .isActive(true)
+                .categoriesEntities(categoriesEntities)
+                .amenitesEntities(amenitesEntities)
+                .imagesEntities(imagesEntities)
+                .countriesEntity(countriesEntity)
+                .position(2)
+                .avgStart(4.5)
+                .description(description)
+                .build();
+            
+            
+            imagesEntities.forEach(img -> img.setListingEntity(entity));
+            entity.setImagesEntities(imagesEntities);
+
+            // Lưu listing (và cascade ảnh nếu có)
+            this.listingsRepository.save(entity);
+    }
+    private void createdReview(){
+        UserEntity host = this.userRepository.findByUsername("admin")
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_VALID));       
+        ListingEntity listingEntity = this.listingsRepository.findById(2L)
+                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_EXISTED));
+        ReviewEntity reviewEntity = ReviewEntity.builder()
+                .comment("Phòng đẹp, thoáng mát")
+                .rating(5.0) 
+                .userEntity(host)
+                .listingEntity(listingEntity)
+                .build();
+        this.reviewsRepository.save(reviewEntity);
     }
 }

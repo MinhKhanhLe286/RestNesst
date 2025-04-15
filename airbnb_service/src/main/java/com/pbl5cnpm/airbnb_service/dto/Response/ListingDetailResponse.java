@@ -1,10 +1,6 @@
 package com.pbl5cnpm.airbnb_service.dto.Response;
-
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-
-import com.pbl5cnpm.airbnb_service.entity.AmenitesEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,16 +16,18 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListingsResponse {
-    Long id;
-    String name;
+public class ListingDetailResponse {
+    String title;
+    String description;
     String address;
     String country;
     String avgStart;
-    List<String> images;
+    String hostThumnailUrl;
     Boolean popular;
     LocalDate startDate;
     LocalDate endDate;
     Double price;
-    String hostThumnailUrl;
+    List<String> images;
+    List<AmenitiesForListingRespose> amenites;
+    List<ReviewResponse> reviews;
 }

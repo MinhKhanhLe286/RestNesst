@@ -30,8 +30,9 @@ public class UserEntity extends BaseEntity {
     String email;
     String phone;
     String password;
+    String thumnailUrl;
     @Column(nullable = false, unique = true)
-    private String username;
+    String username;
     @ManyToMany
     @JoinTable(
         name = "user_roles",
@@ -41,4 +42,7 @@ public class UserEntity extends BaseEntity {
     Set<RoleEntity> roles  = new HashSet<>();
     @OneToMany(mappedBy = "host")
     List<ListingEntity> listings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    List<ReviewEntity> reviews;
 }

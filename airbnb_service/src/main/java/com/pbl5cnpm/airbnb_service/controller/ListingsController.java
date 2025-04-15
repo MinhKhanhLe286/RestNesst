@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
+import com.pbl5cnpm.airbnb_service.dto.Response.ListingDetailResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.service.ListingsServices;
 
@@ -28,8 +29,8 @@ public class ListingsController {
         return apiResponse;
     }
     @GetMapping("/listings/{id}")
-    public ApiResponse<ListingsResponse> getDetail(@PathVariable Long id){
-        return ApiResponse.<ListingsResponse>builder()
+    public ApiResponse<ListingDetailResponse> getDetail(@PathVariable Long id){
+        return ApiResponse.<ListingDetailResponse>builder()
                 .code(200)
                 .message("get detail successfully!")
                 .result(this.listingsServices.getDetail(id))
