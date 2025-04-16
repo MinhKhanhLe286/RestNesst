@@ -63,4 +63,7 @@ public class ListingEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "listingEntity", cascade = CascadeType.ALL)
     List<ReviewEntity> reviews;
+
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    List<FavoriteEntity> likedByUsers;
 }

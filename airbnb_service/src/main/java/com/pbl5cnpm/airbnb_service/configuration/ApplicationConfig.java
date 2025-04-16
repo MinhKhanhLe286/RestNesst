@@ -54,7 +54,7 @@ public class ApplicationConfig {
     @Bean
     ApplicationRunner applicationRunner() {
         return args -> {
-            
+            createFullRole();
             if (userRepository.findByUsername("admin").isEmpty()) {
                 Set<RoleEntity> roles = new HashSet<>(this.roleRepository.findAll());
 
@@ -67,7 +67,7 @@ public class ApplicationConfig {
                 log.warn("User admin created with full Role");
             }
             createBaseCategoies();
-            createFullRole();
+            
             createdBaseAmenities();
             createdBaseCountries();
             if(this.listingsRepository.findAll().size() == 0){

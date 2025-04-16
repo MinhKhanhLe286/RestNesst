@@ -21,7 +21,7 @@ public interface UserMapper {
     default Set<String> mapRoles(UserEntity userEntity) {
         return userEntity.getRoles()
                 .stream()
-                .map(role -> role.getRoleName()) // Lấy tên Role
+                .map(role -> role.getRoleName()) 
                 .collect(Collectors.toSet());
     }
 }

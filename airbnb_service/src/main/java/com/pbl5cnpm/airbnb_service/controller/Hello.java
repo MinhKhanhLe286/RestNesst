@@ -7,6 +7,7 @@ import com.pbl5cnpm.airbnb_service.dto.Response.AmenitiesResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
 import com.pbl5cnpm.airbnb_service.service.AmenitiesService;
+import com.pbl5cnpm.airbnb_service.service.CloudinaryService;
 import com.pbl5cnpm.airbnb_service.service.ImageService;
 import com.pbl5cnpm.airbnb_service.service.ListingsServices;
 
@@ -22,8 +23,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class Hello {
-   
+
     @Autowired
-    private ListingsServices listingsServices;
-    
+    private CloudinaryService cloudinaryService;
+    @GetMapping("/test")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String imageUrl = cloudinaryService.uploadImageCloddy(file);
+            if (imageUrl != null) {
+                return ResponseEntity.ok(imageUrl);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Upload thất bại.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Lỗi: " + e.getMessage());
+        }
+    }
 }

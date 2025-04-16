@@ -45,4 +45,7 @@ public class UserEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
     List<ReviewEntity> reviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<FavoriteEntity> favoriteListings;
 }
