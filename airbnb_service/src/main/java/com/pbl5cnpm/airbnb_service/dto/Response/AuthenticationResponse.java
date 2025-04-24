@@ -15,6 +15,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationResponse {
-    Boolean authenticated;
-    String token;
+    String name;
+    String access_token;
+    String refresh_token;
+    String expired_token;
 }

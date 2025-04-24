@@ -25,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     
-    private final String[] PUBLIC_POST = {"/api/users", "/auth/token", "/auth/introspect"};
+    private final String[] PUBLIC_POST = {"/api/users", "/auth/login", "/auth/introspect"};
     private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
     private final String[] PULIC_GET = {"/test", "/api/users", "/api/categories", "/api/amenities","/api/countries",
                                          "/api/listings", "/api/listings/{id}"};

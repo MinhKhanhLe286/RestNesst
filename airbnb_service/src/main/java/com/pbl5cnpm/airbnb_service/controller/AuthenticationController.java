@@ -19,8 +19,8 @@ import com.pbl5cnpm.airbnb_service.service.AuthenticationService;
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
-    @PostMapping("auth/token")
-    public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationResquest resquest){
+    @PostMapping("auth/login")
+    public ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationResquest resquest) throws JOSEException{
         var result = this.authenticationService.authenticate(resquest);
         return  ApiResponse.<AuthenticationResponse>builder()
                             .result(result)
