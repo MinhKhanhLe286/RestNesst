@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,9 +27,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     
-    private final String[] PUBLIC_POST = {"/api/users", "/auth/login", "/auth/introspect"};
+    private final String[] PUBLIC_POST = {"/api/users", "/auth/login", "/auth/introspect", "/auth/logout"};
     private final String[] PUBLIC_END_POINT_TEST = {"/api/categories","/api/countries"};
-    private final String[] PULIC_GET = {"/test", "/api/users", "/api/categories", "/api/amenities","/api/countries",
+    private final String[] PULIC_GET = {"/test", "/api/categories", "/api/amenities","/api/countries",
                                          "/api/listings", "/api/listings/{id}"};
     
     @Value("${security.secret}")
@@ -42,13 +44,24 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, PULIC_GET ).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_END_POINT_TEST).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll() // main
+                .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
-            .oauth2ResourceServer(auth2 -> auth2.jwt(JwtConfigurer -> JwtConfigurer.decoder(jwtDecoder())));
+            .oauth2ResourceServer(
+                auth2 -> 
+                    auth2.jwt(JwtConfigurer -> JwtConfigurer.decoder(jwtDecoder()).jwtAuthenticationConverter(authenticationConverter()))
+            );
 
         return httpSecurity.build();
     }
-    
+    @Bean
+    JwtAuthenticationConverter authenticationConverter(){
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthorityPrefix("");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return converter;
+    }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

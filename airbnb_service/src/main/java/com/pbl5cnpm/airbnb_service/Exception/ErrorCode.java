@@ -2,6 +2,7 @@ package com.pbl5cnpm.airbnb_service.exception;
 
 public enum ErrorCode {
     USER_EXISTED(1000,"user existd"),
+    USER_NOT_EXISTED(1009,"user not existd"),
     ROLE_NOT_EXISTED(1001,"role not exited!"),
     USERNAME_EXISTED(1002, "username exited!"),
     USERNAME_VALID(1003,"username is vaild!"),

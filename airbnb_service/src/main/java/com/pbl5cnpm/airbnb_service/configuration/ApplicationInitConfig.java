@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
-public class ApplicationConfig {
+public class ApplicationInitConfig {
 
     RoleService roleService;
     RoleRepository roleRepository;
@@ -51,10 +51,15 @@ public class ApplicationConfig {
     ListingsRepository listingsRepository;
     UserRepository userRepository;
     ReviewsRepository reviewsRepository;
+
     @Bean
     ApplicationRunner applicationRunner() {
         return args -> {
             createFullRole();
+            createBaseCategoies();
+
+            createdBaseAmenities();
+            createdBaseCountries();
             if (userRepository.findByUsername("admin").isEmpty()) {
                 Set<RoleEntity> roles = new HashSet<>(this.roleRepository.findAll());
 
@@ -66,16 +71,13 @@ public class ApplicationConfig {
                 userRepository.save(userOrigin);
                 log.warn("User admin created with full Role");
             }
-            createBaseCategoies();
-            
-            createdBaseAmenities();
-            createdBaseCountries();
-            if(this.listingsRepository.findAll().size() == 0){
+
+            if (this.listingsRepository.findAll().size() == 0) {
                 createdBaseListing();
                 createdBaseListing2();
                 createdReview();
             }
-            
+
         };
     }
 
@@ -159,11 +161,11 @@ public class ApplicationConfig {
 
     private void createdBaseListing() {
         ImagesEntity image1 = ImagesEntity.builder()
-                .imageUrl("uploads/anh1")
+                .imageUrl("uploads/anh1.png")
                 .deleted(false)
                 .build();
         ImagesEntity image2 = ImagesEntity.builder()
-                .imageUrl("uploads/anh2")
+                .imageUrl("uploads/anh2.png")
                 .deleted(false)
                 .build();
         UserEntity host = this.userRepository.findByUsername("admin")
@@ -194,25 +196,26 @@ public class ApplicationConfig {
                 .avgStart(4.9)
                 .build();
         // Gán listing cho từng ảnh
-            imagesEntities.forEach(img -> img.setListingEntity(entity));
-            entity.setImagesEntities(imagesEntities);
+        imagesEntities.forEach(img -> img.setListingEntity(entity));
+        entity.setImagesEntities(imagesEntities);
 
-            // Lưu listing (và cascade ảnh nếu có)
-            this.listingsRepository.save(entity);
+        // Lưu listing (và cascade ảnh nếu có)
+        this.listingsRepository.save(entity);
     }
+
     private void createdBaseListing2() {
         String description = """
-                        Có 5 loại phòng trong biệt thự Ngân Phú: Phòng đôi, phòng 3 người, phòng đơn, phòng 2 giường đơn và phòng 4 người.
-                        Nằm ở vị trí lý tưởng ở một vị trí tuyệt vời chỉ cách trung tâm Hội An 2 km và cách bãi biển Cửa Đại 2 km,
-                        với phòng hiện đại đẹp mắt và hiện đại yên tĩnh tuyệt đẹp, nhà của chúng tôi là nơi tốt nhất ở Hội An
-                        cho những ai muốn tận hưởng một kỳ nghỉ thoải mái trong bầu không khí ấm cúng như ở nhà.
-                        """;
+                Có 5 loại phòng trong biệt thự Ngân Phú: Phòng đôi, phòng 3 người, phòng đơn, phòng 2 giường đơn và phòng 4 người.
+                Nằm ở vị trí lý tưởng ở một vị trí tuyệt vời chỉ cách trung tâm Hội An 2 km và cách bãi biển Cửa Đại 2 km,
+                với phòng hiện đại đẹp mắt và hiện đại yên tĩnh tuyệt đẹp, nhà của chúng tôi là nơi tốt nhất ở Hội An
+                cho những ai muốn tận hưởng một kỳ nghỉ thoải mái trong bầu không khí ấm cúng như ở nhà.
+                """;
         ImagesEntity image1 = ImagesEntity.builder()
-                .imageUrl("uploads/anh11")
+                .imageUrl("uploads/anh11.png")
                 .deleted(false)
                 .build();
         ImagesEntity image2 = ImagesEntity.builder()
-                .imageUrl("uploads/anh22")
+                .imageUrl("uploads/anh22.png")
                 .deleted(false)
                 .build();
         UserEntity host = this.userRepository.findByUsername("admin")
@@ -243,22 +246,22 @@ public class ApplicationConfig {
                 .avgStart(4.5)
                 .description(description)
                 .build();
-            
-            
-            imagesEntities.forEach(img -> img.setListingEntity(entity));
-            entity.setImagesEntities(imagesEntities);
 
-            // Lưu listing (và cascade ảnh nếu có)
-            this.listingsRepository.save(entity);
+        imagesEntities.forEach(img -> img.setListingEntity(entity));
+        entity.setImagesEntities(imagesEntities);
+
+        // Lưu listing (và cascade ảnh nếu có)
+        this.listingsRepository.save(entity);
     }
-    private void createdReview(){
+
+    private void createdReview() {
         UserEntity host = this.userRepository.findByUsername("admin")
-                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_VALID));       
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_VALID));
         ListingEntity listingEntity = this.listingsRepository.findById(2L)
-                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.LISTING_NOT_EXISTED));
         ReviewEntity reviewEntity = ReviewEntity.builder()
                 .comment("Phòng đẹp, thoáng mát")
-                .rating(5.0) 
+                .rating(5.0)
                 .userEntity(host)
                 .listingEntity(listingEntity)
                 .build();

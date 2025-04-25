@@ -26,12 +26,15 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.pbl5cnpm.airbnb_service.dto.Request.AuthenticationResquest;
 import com.pbl5cnpm.airbnb_service.dto.Request.IntrospectRequest;
+import com.pbl5cnpm.airbnb_service.dto.Request.LogoutRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.AuthenticationResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.IntrospectResponse;
+import com.pbl5cnpm.airbnb_service.entity.InvalidTokenEntity;
 import com.pbl5cnpm.airbnb_service.entity.RoleEntity;
 import com.pbl5cnpm.airbnb_service.entity.UserEntity;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
+import com.pbl5cnpm.airbnb_service.repository.InvalidTokenRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+    private final InvalidTokenRepository invalidTokenRepository;
     @Value("${security.secret}")
     private String SIGNER_KEY;
     @Value("${security.duration_access}")
@@ -104,9 +107,8 @@ public class AuthenticationService {
     
         return signedJWT.serialize();
     }
-     private String buildScope(Set<String> roles){
+    private String buildScope(Set<String> roles){
         StringJoiner joiner = new StringJoiner(" ", "", "");
-        int n = roles.size();
         for (String item : roles) {
             joiner.add(item);
         }
@@ -119,5 +121,44 @@ public class AuthenticationService {
         }
         return result;
     }
+    private boolean isValidToken(String token) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
+            boolean verified = jwt.verify(verifier);
     
+            Date expirationTime = jwt.getJWTClaimsSet().getExpirationTime();
+            Date now = new Date();
+            if (verified && expirationTime != null && expirationTime.after(now)) {
+                return true;
+            }
+        } catch (ParseException | JOSEException e) {
+            e.printStackTrace(); 
+        }
+    
+        return false;
+    }
+    public void handleLogout(LogoutRequest logoutRequest){
+        saveToken(logoutRequest.getAccess_token());
+        saveToken(logoutRequest.getRefresh_token());
+    }
+    private void saveToken(String token){
+        if(isValidToken(token)){
+            JWTClaimsSet claimsSet = getClaimSet(token);
+            InvalidTokenEntity entity = InvalidTokenEntity.builder()
+                                        .id(claimsSet.getJWTID())
+                                        .expired(claimsSet.getExpirationTime())
+                                        .build();
+            this.invalidTokenRepository.save(entity);
+        }
+    }
+    private JWTClaimsSet getClaimSet(String token) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(token); 
+            return jwt.getJWTClaimsSet(); 
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
+
 }

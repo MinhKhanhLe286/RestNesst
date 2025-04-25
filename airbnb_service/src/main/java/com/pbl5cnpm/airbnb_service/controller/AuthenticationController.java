@@ -3,6 +3,8 @@ package com.pbl5cnpm.airbnb_service.controller;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nimbusds.jose.JOSEException;
 import com.pbl5cnpm.airbnb_service.dto.Request.AuthenticationResquest;
 import com.pbl5cnpm.airbnb_service.dto.Request.IntrospectRequest;
+import com.pbl5cnpm.airbnb_service.dto.Request.LogoutRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.AuthenticationResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.IntrospectResponse;
@@ -36,5 +39,11 @@ public class AuthenticationController {
                         .code(200)
                         .message("Introspect valid!")
                         .build();   
+    }
+    @PostMapping("auth/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest logoutRequest) {
+        
+        this.authenticationService.handleLogout(logoutRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204
     }
 }
