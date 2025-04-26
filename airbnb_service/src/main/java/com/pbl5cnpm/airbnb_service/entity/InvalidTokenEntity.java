@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Document(collation = "InvalidToken")
+@Document(collection = "InvalidToken")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter

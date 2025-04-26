@@ -1,6 +1,7 @@
 package com.pbl5cnpm.airbnb_service.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +24,17 @@ public class GlobalExceptionHandler {
         apirest.setCode(err.getCode());
         apirest.setMessage((err.getMessage()));
 
-        return ResponseEntity.badRequest().body(apirest);
+        return ResponseEntity.status(err.getHttpStatus().value()).body(apirest);
+    }
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> hanldeAccessDeninedException(){
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                                            .code(errorCode.getCode())
+                                            .message(  "Error: Authority")
+                                            .result(errorCode.getMessage())
+                                            .build();
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(apiResponse);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception){

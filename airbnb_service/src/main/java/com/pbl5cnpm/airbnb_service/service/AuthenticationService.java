@@ -53,6 +53,13 @@ public class AuthenticationService {
     private String DURATION_ACCESS;
     @Value("${security.duration_refresh}")
     private String DURATION_REFRESH;
+
+    /**
+     * hanlde login 
+     * @param resquest
+     * @return
+     * @throws JOSEException
+     */
     public AuthenticationResponse authenticate(AuthenticationResquest resquest) throws JOSEException{
         UserEntity userEntity = this.userRepository.findByUsername(resquest.getUsername())
                                 .orElseThrow(()-> new AppException(ErrorCode.USER_EXISTED));
@@ -72,14 +79,12 @@ public class AuthenticationService {
                                       .build();
     }
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException{
-        String token = request.getToken();
-        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY);
-        SignedJWT jwt = SignedJWT.parse(token);
-        Boolean verifed = jwt.verify(jwsVerifier);
-        Date expityTime = jwt.getJWTClaimsSet().getExpirationTime();
-        return IntrospectResponse.builder()
-                                .vaild(verifed && expityTime.after(new Date()))
-                                .build();
+        isValidToken(request.getToken());
+        String idToken = getClaimSet(request.getToken()).getJWTID();
+        if (this.invalidTokenRepository.findById(idToken).isPresent()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        return IntrospectResponse.builder().vaild(true).build();
     }
     private String generationToken(UserEntity userEntity, boolean isRefresh) throws JOSEException {
         Date now = new Date();
@@ -132,6 +137,7 @@ public class AuthenticationService {
             if (verified && expirationTime != null && expirationTime.after(now)) {
                 return true;
             }
+            
         } catch (ParseException | JOSEException e) {
             e.printStackTrace(); 
         }
@@ -139,10 +145,10 @@ public class AuthenticationService {
         return false;
     }
     public void handleLogout(LogoutRequest logoutRequest){
-        saveToken(logoutRequest.getAccess_token());
-        saveToken(logoutRequest.getRefresh_token());
+        invalidateToken(logoutRequest.getAccess_token());
+        invalidateToken(logoutRequest.getRefresh_token());
     }
-    private void saveToken(String token){
+    private void invalidateToken (String token){
         if(isValidToken(token)){
             JWTClaimsSet claimsSet = getClaimSet(token);
             InvalidTokenEntity entity = InvalidTokenEntity.builder()
