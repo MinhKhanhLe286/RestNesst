@@ -13,6 +13,7 @@ import com.nimbusds.jose.JOSEException;
 import com.pbl5cnpm.airbnb_service.dto.Request.AuthenticationResquest;
 import com.pbl5cnpm.airbnb_service.dto.Request.IntrospectRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.LogoutRequest;
+import com.pbl5cnpm.airbnb_service.dto.Request.RefreshTokenRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.AuthenticationResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.IntrospectResponse;
@@ -45,5 +46,17 @@ public class AuthenticationController {
         
         this.authenticationService.handleLogout(logoutRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204
+    }
+    @PostMapping("auth/refresh")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) throws JOSEException {
+        
+        var result =  this.authenticationService.handleRefreshToken(refreshTokenRequest.getRefresh_token());
+        
+        return ApiResponse.<AuthenticationResponse>builder()
+                                .code(HttpStatus.OK.value())
+                                .message("refresh token succesfully")
+                                .result(result)
+                                .build();
+
     }
 }

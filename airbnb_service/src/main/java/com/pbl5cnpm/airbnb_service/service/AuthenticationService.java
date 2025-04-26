@@ -74,8 +74,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                                       .access_token(access_token)
                                       .refresh_token(refresh_token)
-                                      .expired_token(DURATION_ACCESS)
-                                      .name(userEntity.getFullname())                
+                                      .expired_token(DURATION_ACCESS)               
                                       .build();
     }
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException{
@@ -104,14 +103,27 @@ public class AuthenticationService {
                 .claim("type_token", typeToken)
                 .claim("scope", buildScope(roles))
                 .build();
-
-    
         SignedJWT signedJWT = new SignedJWT(header, claimsSet);
         JWSSigner jwsSigner = new MACSigner(SIGNER_KEY.getBytes());
         signedJWT.sign(jwsSigner);
     
         return signedJWT.serialize();
     }
+    public AuthenticationResponse handleRefreshToken(String refreshToken) throws JOSEException{
+        boolean isValid = isValidToken(refreshToken); // checked expired time
+        boolean isRefreshToken = getClaimSet(refreshToken).getClaim("type_token").toString().equals("refresh");
+        if (isValid && isRefreshToken){
+            UserEntity user = this.userRepository.findByUsername(getClaimSet(refreshToken).getSubject())
+                                        .orElseThrow(()->  new AppException(ErrorCode.USER_NOT_EXISTED));
+            return AuthenticationResponse.builder()
+                        .access_token(generationToken(user, false))
+                        .refresh_token(generationToken(user, true))
+                        .expired_token(DURATION_ACCESS)   
+                        .build();
+        }
+        throw new AppException(ErrorCode.UNAUTHENTICATED);
+    }
+
     private String buildScope(Set<String> roles){
         StringJoiner joiner = new StringJoiner(" ", "", "");
         for (String item : roles) {
@@ -166,5 +178,5 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
-
+    
 }

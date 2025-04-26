@@ -30,7 +30,6 @@ public class ReviewEntity {
     Double rating; 
 
     @CreationTimestamp
-    @Column(name = "review_date")
     LocalDate reviewDate;
 
     @ManyToOne

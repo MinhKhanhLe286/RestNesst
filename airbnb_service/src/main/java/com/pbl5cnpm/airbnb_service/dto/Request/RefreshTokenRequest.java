@@ -1,4 +1,4 @@
-package com.pbl5cnpm.airbnb_service.dto.Response;
+package com.pbl5cnpm.airbnb_service.dto.Request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,15 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-@Setter
 @Getter
-@Builder
+@Setter
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
-    
-    String access_token;
+public class RefreshTokenRequest {
     String refresh_token;
-    String expired_token;
 }
