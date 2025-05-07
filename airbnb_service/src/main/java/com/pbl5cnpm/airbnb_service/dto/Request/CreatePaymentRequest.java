@@ -1,4 +1,5 @@
 package com.pbl5cnpm.airbnb_service.dto.Request;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
@@ -18,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 public class CreatePaymentRequest {
     Long amount;
     Long listingId;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    Date startDate;
+    Date endDate;
+    String content;
 }

@@ -31,6 +31,7 @@ public class CreatepaymentService {
                             .startDate(request.getStartDate())
                             .endDate(request.getEndDate())
                             .amount(request.getAmount())
+                            .content(request.getContent())
                             .build();
         String infoID = this.createPaymentInfoRepository.save(payment).getId();
         return infoID;

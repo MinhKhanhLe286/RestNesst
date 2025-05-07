@@ -15,6 +15,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
+import com.pbl5cnpm.airbnb_service.dto.Request.UserProfileRequset;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingFavorite;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserFavoriteResponse;
@@ -45,6 +46,7 @@ public class UserService {
     private final MailerService mailerService;
     private final PasswordEncoder passwordEncoder;
     private final ListingMapper listingMapper;
+    private final CloudinaryService cloudinaryService;
     @Value("${security.secret}")
     private String SIGNER_KEY;
     @Value("${image.customer}")
@@ -112,5 +114,23 @@ public class UserService {
                 .userId(userId)
                 .favorites(favorites)
                 .build();
+    }
+    public UserInfor handleUpdateProfile(UserProfileRequset profileRequset, String username){
+        UserEntity userEntity = this.userRepository.findByUsername(username)
+                                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if(!profileRequset.getEmail().isBlank()){
+            userEntity.setEmail(profileRequset.getEmail());
+        }
+        if(!profileRequset.getFullname().isBlank()){
+            userEntity.setFullname(profileRequset.getFullname());
+        }
+        if(!profileRequset.getPhone().isBlank()){
+            userEntity.setPhone(profileRequset.getPhone());
+        }
+        if(profileRequset.getThumnail() != null){
+            var url = this.cloudinaryService.uploadImageCloddy(profileRequset.getThumnail());
+            userEntity.setThumnailUrl(url);
+        }
+        return this.mapper.toUserInfor( this.userRepository.save(userEntity));
     }
 }

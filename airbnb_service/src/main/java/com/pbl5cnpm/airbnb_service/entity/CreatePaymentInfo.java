@@ -28,7 +28,8 @@ public class CreatePaymentInfo {
     Long userId;
     Long listingId;
     Long amount;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    Date startDate;
+    Date endDate;
     LocalDateTime createAt;
+    String content;
 }

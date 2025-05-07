@@ -103,6 +103,7 @@ public class PaymentControllerReturn {
                                         .status(PaymentStatus.SUCCESS.toString())
                                         .transactionId(vnp_TransactionNo)
                                         .startDate(createPaymentInfo.getStartDate())
+                                        .content(createPaymentInfo.getContent())
                                         .endDate(createPaymentInfo.getEndDate())
                                         .paymentMethod(PaymentMethod.VNPAY.toString())
                                         .build();

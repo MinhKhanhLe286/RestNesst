@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -30,9 +31,9 @@ public class PaymentEntity extends BaseEntity {
     Long amount;
     String paymentMethod;
     String status;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    Date startDate;
+    Date endDate;
     @Column(unique = true, nullable = false)
     String transactionId;
-    
+    String content;
 }
