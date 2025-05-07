@@ -76,7 +76,7 @@ public class UserService {
         UserEntity userEntity = mapper.toUserEntity(request);
         userEntity.setPassword(encodedPassword);
         userEntity.setRoles(roles);
-        userEntity.setThumnailUrl(THUMNAIL);
+        //userEntity.setThumnailUrl(THUMNAIL);
         return mapper.toUserResponse(userRepository.save(userEntity));
     }
 

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,26 +19,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.JOSEException;
+import com.pbl5cnpm.airbnb_service.dto.Request.FavoriteRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserProfileRequset;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserFavoriteResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserInfor;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserResponse;
+import com.pbl5cnpm.airbnb_service.service.FavoriteService;
 import com.pbl5cnpm.airbnb_service.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api")
-
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final FavoriteService favoriteService;
+    private final UserService userService;
+
 
     @PostMapping("/users")
     public ResponseEntity<ApiResponse<UserResponse>> created(@RequestBody @Valid UserRequest request) {
@@ -78,7 +85,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/user/favorites")
+    @GetMapping("/users/favorites") // lây full 
     public ApiResponse<UserFavoriteResponse> getMethodName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -90,7 +97,29 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping(value = "/user", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/users/favorites") // tạo
+    public ResponseEntity<Void> postMethodName(@RequestBody FavoriteRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long listingId = request.getListingId();
+        this.favoriteService.addFavorite(listingId, username);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/user/favorites") // xóa
+    public ApiResponse<Void> handleDelete(@RequestBody FavoriteRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long listingId = request.getListingId();
+        this.favoriteService.deleteFavorite(listingId, username);
+
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("delete succesfully")
+                .build();
+    }
+
+    @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserInfor> updateUser(@ModelAttribute UserProfileRequset request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
