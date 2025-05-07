@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
 @Builder
 @Getter
 @Setter
@@ -21,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 @Entity
-@Table(name = "users") 
+@Table(name = "users")
 public class UserEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +35,8 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     String username;
     @ManyToMany
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    Set<RoleEntity> roles  = new HashSet<>();
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    Set<RoleEntity> roles = new HashSet<>();
     @OneToMany(mappedBy = "host")
     List<ListingEntity> listings = new ArrayList<>();
 
@@ -48,4 +45,7 @@ public class UserEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<FavoriteEntity> favoriteListings;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<PaymentEntity> payments = new ArrayList<>();
+
 }

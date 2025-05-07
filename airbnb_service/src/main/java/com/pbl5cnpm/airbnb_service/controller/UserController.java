@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nimbusds.jose.JOSEException;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
+import com.pbl5cnpm.airbnb_service.dto.Response.UserFavoriteResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserInfor;
 import com.pbl5cnpm.airbnb_service.dto.Response.UserResponse;
 import com.pbl5cnpm.airbnb_service.service.UserService;
@@ -23,7 +26,6 @@ import com.pbl5cnpm.airbnb_service.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/api")
@@ -33,7 +35,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<ApiResponse<UserResponse>> created(@RequestBody @Valid UserRequest request)  {
+    public ResponseEntity<ApiResponse<UserResponse>> created(@RequestBody @Valid UserRequest request) {
         UserResponse userResponse = userService.handleCreateUser(request);
 
         ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
@@ -44,6 +46,7 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getALL() {
@@ -57,16 +60,28 @@ public class UserController {
 
         return ResponseEntity.ok(apiResponse);
     }
-    
+
     @GetMapping("/users/myInformation")
-    public ApiResponse getMethodName(HttpServletRequest  request) throws ParseException, JOSEException {
+    public ApiResponse getMethodName(HttpServletRequest request) throws ParseException, JOSEException {
         String authorization = request.getHeader("Authorization");
         String token = "";
         if (authorization != null && authorization.startsWith("Bearer ")) {
             token = authorization.substring(7);
         }
         return ApiResponse.<UserInfor>builder()
-                    .result(this.userService.handleInfor(token))
+                .result(this.userService.handleInfor(token))
+                .build();
+    }
+
+    @GetMapping("/user/favorites")
+    public ApiResponse<UserFavoriteResponse> getMethodName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username =  authentication.getName();
+        var UserFavoriteResponse =  this.userService.getFavorites(username);
+        return ApiResponse.<UserFavoriteResponse>builder()
+                    .message("fetch favorite for user")
+                    .code(200)
+                    .result(UserFavoriteResponse)
                     .build();
     }
 

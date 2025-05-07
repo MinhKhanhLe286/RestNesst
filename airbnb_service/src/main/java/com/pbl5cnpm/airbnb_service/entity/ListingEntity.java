@@ -1,6 +1,7 @@
 package com.pbl5cnpm.airbnb_service.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +29,7 @@ public class ListingEntity extends BaseEntity {
     String area;
     Boolean isActive;
     Boolean access;
-    Boolean deleted; 
+    Boolean deleted;
     Double avgStart;
     Boolean popular;
     LocalDate startDate;
@@ -37,23 +38,15 @@ public class ListingEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "host_id")
     UserEntity host;
-    
+
     @ManyToMany
-    @JoinTable(
-        name = "listing_categories",
-        joinColumns = @JoinColumn(name = "listing_id"),
-        inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+    @JoinTable(name = "listing_categories", joinColumns = @JoinColumn(name = "listing_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     List<CategoriesEntity> categoriesEntities;
 
     @ManyToMany
-    @JoinTable(
-        name = "listing_amenites",
-        joinColumns = @JoinColumn(name = "listing_id"),
-        inverseJoinColumns = @JoinColumn(name = "amenites_id")
-    )
-    List<AmenitesEntity> amenitesEntities; 
-    
+    @JoinTable(name = "listing_amenites", joinColumns = @JoinColumn(name = "listing_id"), inverseJoinColumns = @JoinColumn(name = "amenites_id"))
+    List<AmenitesEntity> amenitesEntities;
+
     @OneToMany(mappedBy = "listingEntity", cascade = CascadeType.ALL)
     List<ImagesEntity> imagesEntities;
 
@@ -66,4 +59,8 @@ public class ListingEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<FavoriteEntity> likedByUsers;
+
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    List<PaymentEntity> payments = new ArrayList<>();
+
 }

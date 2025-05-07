@@ -2,6 +2,7 @@ package com.pbl5cnpm.airbnb_service.mapper;
 
 import com.pbl5cnpm.airbnb_service.dto.Response.AmenitiesForListingRespose;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingDetailResponse;
+import com.pbl5cnpm.airbnb_service.dto.Response.ListingFavorite;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ReviewResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
@@ -71,5 +72,15 @@ public interface ListingMapper {
             result.add(res);
         }
         return result;
+    } //// new 
+    @Mappings({
+        @Mapping(source = "imagesEntities", target = "primaryThumnail", qualifiedByName = "primaryThumnail")
+    })
+    ListingFavorite toLitingFavorite(ListingEntity listingEntity);
+
+    @Named("primaryThumnail")
+    default String primaryThumnail(List<ImagesEntity> imagesEntities){
+        if(imagesEntities == null) return null;
+        return imagesEntities.get(0).getImageUrl();
     }
 }

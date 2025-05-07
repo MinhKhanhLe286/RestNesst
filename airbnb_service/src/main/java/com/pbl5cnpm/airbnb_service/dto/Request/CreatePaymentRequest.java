@@ -1,4 +1,5 @@
-package com.pbl5cnpm.airbnb_service.dto.Response;
+package com.pbl5cnpm.airbnb_service.dto.Request;
+import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,12 +15,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserInfor {
-    Long id;
-    String username;
-    String fullname;
-    String email;
-    String phone;
-    String thumnailUrl;
-    
+public class CreatePaymentRequest {
+    Long amount;
+    Long listingId;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
 }
