@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pbl5cnpm.airbnb_service.assistants.HMACutill;
 import com.pbl5cnpm.airbnb_service.dto.Request.CreatePaymentRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
-import com.pbl5cnpm.airbnb_service.repository.CreatePaymentRepository;
+import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.CreatepaymentService;
 
@@ -139,81 +139,6 @@ public class PaymentController {
             ip = request.getRemoteAddr();
         }
         return ip;
-    }
-
-    @GetMapping("/vnpay-return")
-    public String paymentReturn(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
-        Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
-            String fieldName = params.nextElement();
-            String fieldValue = request.getParameter(fieldName);
-            if (fieldName.startsWith("vnp_")) {
-                fields.put(fieldName, fieldValue);
-            }
-        }
-
-        String vnp_SecureHash = fields.remove("vnp_SecureHash");
-        if (vnp_SecureHash == null || vnp_SecureHash.isEmpty()) {
-            model.addAttribute("error", "Thiếu chữ ký.");
-            return "payment-failed";
-        }
-
-        List<String> fieldNames = new ArrayList<>(fields.keySet());
-        Collections.sort(fieldNames);
-
-        StringBuilder hashData = new StringBuilder();
-        for (String fieldName : fieldNames) {
-            String value = fields.get(fieldName);
-            if (value != null && !value.isEmpty()) {
-                hashData.append(fieldName)
-                        .append('=')
-                        .append(URLEncoder.encode(value, StandardCharsets.US_ASCII.toString()))
-                        .append('&');
-            }
-        }
-
-        if (hashData.length() > 0) {
-            hashData.deleteCharAt(hashData.length() - 1);
-        }
-
-        String checkHash = HMACutill.hmacSHA512(vnp_HashSecret, hashData.toString());
-
-        if (!checkHash.equalsIgnoreCase(vnp_SecureHash)) {
-            model.addAttribute("error", "Chữ ký không hợp lệ.");
-            return "payment-failed";
-        }
-
-        String vnp_ResponseCode = fields.get("vnp_ResponseCode");
-
-        if ("00".equals(vnp_ResponseCode)) {
-            String vnp_TxnRef = fields.get("vnp_TxnRef");
-            String vnp_Amount = fields.get("vnp_Amount");
-            String vnp_PayDate = fields.get("vnp_PayDate");
-
-            model.addAttribute("transactionId", vnp_TxnRef);
-            model.addAttribute("amount", formatAmount(vnp_Amount));
-            model.addAttribute("paymentTime", formatPayDate(vnp_PayDate));
-
-            return "vnpay-success";
-        } else {
-            model.addAttribute("error", "Thanh toán thất bại. Mã lỗi: " + vnp_ResponseCode);
-            return "payment-failed";
-        }
-    }
-
-    private String formatAmount(String rawAmount) {
-        long amount = Long.parseLong(rawAmount) / 100;
-        return String.format("%,d VND", amount).replace(",", ".");
-    }
-
-    private String formatPayDate(String payDate) {
-        try {
-            SimpleDateFormat input = new SimpleDateFormat("yyyyMMddHHmmss");
-            SimpleDateFormat output = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
-            return output.format(input.parse(payDate));
-        } catch (Exception e) {
-            return "Không xác định";
-        }
     }
 
 }

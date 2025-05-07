@@ -21,7 +21,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "PaymentInfo")
-public class CreatePayment {
+public class CreatePaymentInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

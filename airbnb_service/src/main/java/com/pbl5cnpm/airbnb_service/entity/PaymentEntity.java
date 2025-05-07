@@ -27,9 +27,12 @@ public class PaymentEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "listing_id", nullable = false)
     ListingEntity listing;
-    Double amount;
+    Long amount;
     String paymentMethod;
     String status;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
+    @Column(unique = true, nullable = false)
     String transactionId;
     
 }

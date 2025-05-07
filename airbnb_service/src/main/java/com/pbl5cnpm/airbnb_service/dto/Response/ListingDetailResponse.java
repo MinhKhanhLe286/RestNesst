@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ListingDetailResponse {
+    Long id;
     String title;
     String description;
     String address;
