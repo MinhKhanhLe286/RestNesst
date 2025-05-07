@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.JOSEException;
 import com.pbl5cnpm.airbnb_service.dto.Request.AuthenticationResquest;
+import com.pbl5cnpm.airbnb_service.dto.Request.ForgetPasswordRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.IntrospectRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.LogoutRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.RefreshTokenRequest;
@@ -18,6 +19,8 @@ import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.AuthenticationResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.IntrospectResponse;
 import com.pbl5cnpm.airbnb_service.service.AuthenticationService;
+
+import jakarta.mail.MessagingException;
 
 @RestController
 public class AuthenticationController {
@@ -57,6 +60,11 @@ public class AuthenticationController {
                                 .message("refresh token succesfully")
                                 .result(result)
                                 .build();
-
+    }
+    @PostMapping("auth/forget")
+    public ApiResponse<Void> postMethodName(@RequestBody ForgetPasswordRequest request) throws MessagingException {
+        boolean result = this.authenticationService.handleForgetPass(request);
+        return ApiResponse.<Void>builder()
+                        .build();
     }
 }

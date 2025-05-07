@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -25,6 +26,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.pbl5cnpm.airbnb_service.dto.Request.AuthenticationResquest;
+import com.pbl5cnpm.airbnb_service.dto.Request.ForgetPasswordRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.IntrospectRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.LogoutRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.AuthenticationResponse;
@@ -37,6 +39,7 @@ import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.repository.InvalidTokenRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +50,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final InvalidTokenRepository invalidTokenRepository;
+    private final MailerService mailerService;
     @Value("${security.secret}")
     private String SIGNER_KEY;
     @Value("${security.duration_access}")
@@ -178,5 +182,23 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
-    
+    public boolean handleForgetPass(ForgetPasswordRequest forgetPasswordRequest) throws MessagingException{
+        String username = forgetPasswordRequest.getUsername();
+        String email = forgetPasswordRequest.getUsername();
+        var userEntity = this.userRepository.findByUsername(username)
+                            .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if(userEntity.getEmail().equals(email)){
+            String newPass = randomPass(8);
+            String content = "new password is: " + newPass ;
+            this.mailerService.sendHtmlEmail(email, "Forget password", content);
+            userEntity.setPassword(this.passwordEncoder.encode(newPass));
+            this.userRepository.save(userEntity);
+        }
+        return true;
+    }
+    private String randomPass(int size){
+        Random random = new Random();
+        int value = random.nextInt() * 100000000;
+        return String.valueOf(value);
+    }
 }
