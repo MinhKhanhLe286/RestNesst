@@ -24,40 +24,42 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("${api.base.path}")
 @RequiredArgsConstructor
 public class ListingsController {
     private final ListingsServices listingsServices;
+
     @GetMapping("/listings")
-    public ApiResponse<List<ListingsResponse>> getAll(){
+    public ApiResponse<List<ListingsResponse>> getAll() {
         ApiResponse apiResponse = ApiResponse.<List<ListingsResponse>>builder()
-                                .code(200)
-                                .message("feetch listing successfuly!")
-                                .result(this.listingsServices.handleGetAll())
-                                .build();
+                .code(200)
+                .message("feetch listing successfuly!")
+                .result(this.listingsServices.handleGetAll())
+                .build();
         return apiResponse;
     }
+
     @GetMapping("/listings/{id}")
-    public ApiResponse<ListingDetailResponse> getDetail(@PathVariable Long id){
+    public ApiResponse<ListingDetailResponse> getDetail(@PathVariable Long id) {
         return ApiResponse.<ListingDetailResponse>builder()
                 .code(200)
                 .message("get detail successfully!")
                 .result(this.listingsServices.getDetail(id))
                 .build();
     }
-    @PreAuthorize("hasAuthority('HOST')")
-    @PostMapping(value =  "/listings", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN')")
+    @PostMapping(value = "/listings", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ListingsResponse>> creaeListing(@ModelAttribute ListingRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         ApiResponse<ListingsResponse> apiResponse = ApiResponse.<ListingsResponse>builder()
-                                                    .message("Create listing successfully")
-                                                    .code(201)
-                                                    .result(this.listingsServices.handlleCreate(request, username))
-                                                    .build();
+                .message("Create listing successfully")
+                .code(201)
+                .result(this.listingsServices.handlleCreate(request, username))
+                .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
-    
+
 }
