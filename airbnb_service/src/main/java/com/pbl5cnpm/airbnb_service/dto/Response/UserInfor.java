@@ -1,5 +1,7 @@
 package com.pbl5cnpm.airbnb_service.dto.Response;
 
+import java.util.Set;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +23,5 @@ public class UserInfor {
     String email;
     String phone;
     String thumnailUrl;
+    Set<String> roles;
 }
