@@ -65,6 +65,8 @@ public class AuthenticationController {
     public ApiResponse<Void> postMethodName(@RequestBody ForgetPasswordRequest request) throws MessagingException {
         boolean result = this.authenticationService.handleForgetPass(request);
         return ApiResponse.<Void>builder()
+                        .code(200)
+                        .message("update new pass")
                         .build();
     }
 }

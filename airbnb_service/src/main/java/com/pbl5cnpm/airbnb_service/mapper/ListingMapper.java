@@ -1,5 +1,6 @@
 package com.pbl5cnpm.airbnb_service.mapper;
 
+import com.pbl5cnpm.airbnb_service.dto.Request.ListingRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.AmenitiesForListingRespose;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingDetailResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingFavorite;
@@ -7,24 +8,35 @@ import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ReviewResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
 import com.pbl5cnpm.airbnb_service.entity.ReviewEntity;
+import com.pbl5cnpm.airbnb_service.repository.AmenitiesRepository;
+import com.pbl5cnpm.airbnb_service.repository.ImageRepository;
+import com.pbl5cnpm.airbnb_service.service.CloudinaryService;
 import com.pbl5cnpm.airbnb_service.entity.AmenitesEntity;
 import com.pbl5cnpm.airbnb_service.entity.ImagesEntity;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public interface ListingMapper {
-
+public abstract class ListingMapper {
+    
+    @Autowired
+    protected AmenitiesRepository amenitiesRepository;
+    @Autowired
+    protected ImageRepository imageRepository;
+    @Autowired
+    protected CloudinaryService cloudinaryService;
     @Mappings({
             @Mapping(source = "title", target = "name"),
             @Mapping(source = "countriesEntity.name", target = "country"),
             @Mapping(source = "imagesEntities", target = "images", qualifiedByName = "mapImages"),
             @Mapping(source = "host.thumnailUrl", target = "hostThumnailUrl")
     })
-    ListingsResponse toResponse(ListingEntity entity);
+    public abstract ListingsResponse toResponse(ListingEntity entity);
 
     @Mappings({
             @Mapping(source = "countriesEntity.name", target = "country"),
@@ -32,10 +44,10 @@ public interface ListingMapper {
             @Mapping(source = "amenitesEntities", target = "amenites", qualifiedByName = "mapAmenites"),
             @Mapping(source = "reviews", target = "reviews", qualifiedByName = "mapReviews")
     })
-    ListingDetailResponse toDetailResponse(ListingEntity entity);
+    public abstract ListingDetailResponse toDetailResponse(ListingEntity entity);
 
     @Named("mapImages")
-    default List<String> mapImages(List<ImagesEntity> imagesEntities) {
+    protected List<String> mapImages(List<ImagesEntity> imagesEntities) {
         if (imagesEntities == null)
             return null;
         return imagesEntities.stream()
@@ -44,7 +56,7 @@ public interface ListingMapper {
     }
 
     @Named("mapAmenites")
-    default List<AmenitiesForListingRespose> mapAmenites(List<AmenitesEntity> amenitesEntities) {
+    protected List<AmenitiesForListingRespose> mapAmenites(List<AmenitesEntity> amenitesEntities) {
         if (amenitesEntities == null)
             return null;
         return amenitesEntities.stream()
@@ -56,7 +68,7 @@ public interface ListingMapper {
     }
 
     @Named("mapReviews")
-    default List<ReviewResponse> mapReviews(List<ReviewEntity> reviewEntities) {
+    protected List<ReviewResponse> mapReviews(List<ReviewEntity> reviewEntities) {
         if (reviewEntities == null)
             return null;
         List<ReviewResponse> result = new ArrayList<>();
@@ -72,15 +84,45 @@ public interface ListingMapper {
             result.add(res);
         }
         return result;
-    } //// new 
+    }
+
     @Mappings({
         @Mapping(source = "imagesEntities", target = "primaryThumnail", qualifiedByName = "primaryThumnail")
     })
-    ListingFavorite toLitingFavorite(ListingEntity listingEntity);
+    public abstract ListingFavorite toLitingFavorite(ListingEntity listingEntity);
 
     @Named("primaryThumnail")
-    default String primaryThumnail(List<ImagesEntity> imagesEntities){
-        if(imagesEntities == null) return null;
+    protected String primaryThumnail(List<ImagesEntity> imagesEntities){
+        if(imagesEntities == null || imagesEntities.isEmpty()) return null;
         return imagesEntities.get(0).getImageUrl();
     }
+
+    @Mappings({
+        @Mapping(source = "amenites", target = "amenitesEntities", qualifiedByName = "toAmenitesEntities"),
+        @Mapping(source = "imgs",  target = "imagesEntities", qualifiedByName = "toImagesEntities" )
+    })
+    public abstract ListingEntity toEntity(ListingRequest listingRequest);
+    
+    @Named("toAmenitesEntities")
+    protected List<AmenitesEntity> toAmenitesEntities(List<String> amenites){
+        if (amenites == null) return null;
+        List<AmenitesEntity> results = new ArrayList<>();
+        for (String name : amenites) {
+            amenitiesRepository.findByName(name).ifPresent(results::add);
+        }
+        return results;
+    }
+    @Named("toImagesEntities")
+protected List<ImagesEntity> toImagesEntities(List<MultipartFile> imgs){
+    if (imgs == null) return null;
+    List<ImagesEntity> results = new ArrayList<>();
+    for (MultipartFile file : imgs) {
+        ImagesEntity entity = ImagesEntity.builder()
+                .imageUrl(this.cloudinaryService.uploadImageCloddy(file))
+                .build();
+        results.add(entity);
+    }
+    return results;
+}
+
 }

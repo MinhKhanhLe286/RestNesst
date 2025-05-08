@@ -106,7 +106,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/user/favorites") // xóa
+    @DeleteMapping("/users/favorites") // xóa
     public ApiResponse<Void> handleDelete(@RequestBody FavoriteRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

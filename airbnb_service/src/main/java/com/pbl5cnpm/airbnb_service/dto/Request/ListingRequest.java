@@ -1,6 +1,9 @@
-package com.pbl5cnpm.airbnb_service.dto.Response;
+package com.pbl5cnpm.airbnb_service.dto.Request;
+
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,20 +19,15 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListingDetailResponse {
-    Long id;
+public class ListingRequest {
     String title;
     String description;
     String address;
     String country;
     String city;
-    String avgStart;
-    String hostThumnailUrl;
-    Boolean popular;
+    String area;
     LocalDate startDate;
     LocalDate endDate;
-    Double price;
-    List<String> images;
-    List<AmenitiesForListingRespose> amenites;
-    List<ReviewResponse> reviews;
+    List<String> amenites;
+    List<MultipartFile> imgs;
 }

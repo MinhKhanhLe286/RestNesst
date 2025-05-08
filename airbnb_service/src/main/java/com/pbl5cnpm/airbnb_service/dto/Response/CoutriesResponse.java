@@ -17,5 +17,4 @@ import lombok.experimental.FieldDefaults;
 public class CoutriesResponse {
     Long id;
     String name;
-    Boolean deleted;
 }
