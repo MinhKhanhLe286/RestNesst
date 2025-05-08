@@ -19,6 +19,7 @@ import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
 import com.pbl5cnpm.airbnb_service.entity.ReviewEntity;
 import com.pbl5cnpm.airbnb_service.entity.RoleEntity;
 import com.pbl5cnpm.airbnb_service.entity.UserEntity;
+import com.pbl5cnpm.airbnb_service.enums.ListingStatus;
 import com.pbl5cnpm.airbnb_service.enums.RoleName;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
@@ -70,8 +71,22 @@ public class ApplicationInitConfig {
                         .build();
                 userRepository.save(userOrigin);
                 log.warn("User admin created with full Role");
-            }
+            }//
 
+            if (userRepository.findByUsername("host").isEmpty()) {
+                RoleEntity host = this.roleRepository.findByRoleName(RoleName.HOST.toString()).get();
+                Set<RoleEntity> roless = new HashSet<>();
+                roless.add(host);
+
+                UserEntity userOrigin = UserEntity.builder()
+                        .username("host")
+                        .password(encoder.encode("12345678"))
+                        .roles(roless)
+                        .build();
+                userRepository.save(userOrigin);
+                log.warn("User admin created with full Role");
+            }
+            //
             if (this.listingsRepository.findAll().size() == 0) {
                 createdBaseListing();
                 createdBaseListing2();
@@ -187,7 +202,7 @@ public class ApplicationInitConfig {
                 .startDate(LocalDate.parse("2025-04-15"))
                 .endDate(LocalDate.parse("2025-07-01"))
                 .host(host)
-                .isActive(true)
+                .status(ListingStatus.ACTIVE.toString())
                 .categoriesEntities(categoriesEntities)
                 .amenitesEntities(amenitesEntities)
                 .imagesEntities(imagesEntities)
@@ -237,7 +252,7 @@ public class ApplicationInitConfig {
                 .startDate(LocalDate.parse("2025-04-13"))
                 .endDate(LocalDate.parse("2025-07-01"))
                 .host(host)
-                .isActive(true)
+                .status(ListingStatus.ACTIVE.toString())
                 .categoriesEntities(categoriesEntities)
                 .amenitesEntities(amenitesEntities)
                 .imagesEntities(imagesEntities)

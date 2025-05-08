@@ -10,6 +10,7 @@ import com.pbl5cnpm.airbnb_service.dto.Response.ListingDetailResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
 import com.pbl5cnpm.airbnb_service.entity.UserEntity;
+import com.pbl5cnpm.airbnb_service.enums.ListingStatus;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.mapper.ListingMapper;
@@ -25,7 +26,7 @@ public class ListingsServices {
     private final ListingMapper listingMapper;
     private final UserRepository userRepository;
     public List<ListingsResponse> handleGetAll(){
-        List<ListingEntity> entitys = this.listingsRepository.findAllAndStatus(true, false, true, LocalDate.now());
+        List<ListingEntity> entitys = this.listingsRepository.findAllAndStatus(ListingStatus.ACTIVE.toString(), false, true, LocalDate.now());
         
         return entitys.stream().map(listingMapper::toResponse).toList();
     }
@@ -40,6 +41,10 @@ public class ListingsServices {
 
         ListingEntity entity = this.listingMapper.toEntity(listingRequest);
         entity.setHost(host);
-        return this.listingMapper.toResponse(entity);
+        entity.setDeleted(false);
+        entity.setStatus(ListingStatus.ACTIVE.toString());
+        if(host.getRoles().contains("ADMIN")) entity.setAccess(true);
+        var enti =  this.listingsRepository.save(entity);
+        return this.listingMapper.toResponse(enti);
     }
 }

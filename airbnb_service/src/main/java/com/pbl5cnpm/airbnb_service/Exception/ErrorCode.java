@@ -19,7 +19,8 @@ public enum ErrorCode {
     UNAUTHORIZED(1010, "user have no permisson!", HttpStatus.FORBIDDEN),
     INVALID(1011, "data invalid", HttpStatus.BAD_REQUEST),
     FAVORITE_NOT_EXISTED(1012, "favorite not exited", HttpStatus.BAD_REQUEST),
-    TRANSACTION_EXISTED(1013, "transaction exited", HttpStatus.BAD_REQUEST)
+    TRANSACTION_EXISTED(1013, "transaction exited", HttpStatus.BAD_REQUEST),
+    COUNTRY_NOT_EXISTED(1014,"countriy not existed!", HttpStatus.BAD_REQUEST),
     ;
     ErrorCode(int code, String message, HttpStatus httpStatus){
         this.code = code;

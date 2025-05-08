@@ -17,12 +17,12 @@ public class ListingsRepositoryCustomImpl implements ListingsRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<ListingEntity> findAllAndStatus(boolean isActive, boolean deleted, boolean access, LocalDate now  ) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM listings WHERE is_active = :isActive AND deleted = :deleted AND access = :access" );
+    public List<ListingEntity> findAllAndStatus(String status, boolean deleted, boolean access, LocalDate now  ) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM listings WHERE status = :status AND deleted = :deleted AND access = :access" );
                       sql.append(" AND start_date <= :now AND end_date >= :now");  
 
         Query query = entityManager.createNativeQuery(sql.toString(), ListingEntity.class);
-        query.setParameter("isActive", isActive);
+        query.setParameter("status", status);
         query.setParameter("deleted", deleted);
         query.setParameter("access", access);
         query.setParameter("now", now);

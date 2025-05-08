@@ -27,7 +27,7 @@ public class ListingEntity extends BaseEntity {
     String city;
     Double price;
     String area;
-    Boolean isActive;
+    String status;
     Boolean access;
     Boolean deleted;
     Double avgStart;

@@ -8,10 +8,17 @@ import com.pbl5cnpm.airbnb_service.dto.Response.ListingsResponse;
 import com.pbl5cnpm.airbnb_service.dto.Response.ReviewResponse;
 import com.pbl5cnpm.airbnb_service.entity.ListingEntity;
 import com.pbl5cnpm.airbnb_service.entity.ReviewEntity;
+import com.pbl5cnpm.airbnb_service.exception.AppException;
+import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.repository.AmenitiesRepository;
+import com.pbl5cnpm.airbnb_service.repository.CountriesRepository;
 import com.pbl5cnpm.airbnb_service.repository.ImageRepository;
 import com.pbl5cnpm.airbnb_service.service.CloudinaryService;
+
+import ch.qos.logback.core.spi.ErrorCodes;
+
 import com.pbl5cnpm.airbnb_service.entity.AmenitesEntity;
+import com.pbl5cnpm.airbnb_service.entity.CountriesEntity;
 import com.pbl5cnpm.airbnb_service.entity.ImagesEntity;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +37,8 @@ public abstract class ListingMapper {
     protected ImageRepository imageRepository;
     @Autowired
     protected CloudinaryService cloudinaryService;
+    @Autowired
+    protected CountriesRepository countriesRepository;
     @Mappings({
             @Mapping(source = "title", target = "name"),
             @Mapping(source = "countriesEntity.name", target = "country"),
@@ -99,7 +108,8 @@ public abstract class ListingMapper {
 
     @Mappings({
         @Mapping(source = "amenites", target = "amenitesEntities", qualifiedByName = "toAmenitesEntities"),
-        @Mapping(source = "imgs",  target = "imagesEntities", qualifiedByName = "toImagesEntities" )
+        @Mapping(source = "imgs",  target = "imagesEntities", qualifiedByName = "toImagesEntities" ),
+        @Mapping(source= "country", target = "countriesEntity", qualifiedByName = "toCountriesEntity" )
     })
     public abstract ListingEntity toEntity(ListingRequest listingRequest);
     
@@ -113,16 +123,21 @@ public abstract class ListingMapper {
         return results;
     }
     @Named("toImagesEntities")
-protected List<ImagesEntity> toImagesEntities(List<MultipartFile> imgs){
-    if (imgs == null) return null;
-    List<ImagesEntity> results = new ArrayList<>();
-    for (MultipartFile file : imgs) {
-        ImagesEntity entity = ImagesEntity.builder()
-                .imageUrl(this.cloudinaryService.uploadImageCloddy(file))
-                .build();
-        results.add(entity);
+    protected List<ImagesEntity> toImagesEntities(List<MultipartFile> imgs){
+        if (imgs == null) return null;
+        List<ImagesEntity> results = new ArrayList<>();
+        for (MultipartFile file : imgs) {
+            ImagesEntity entity = ImagesEntity.builder()
+                    .imageUrl(this.cloudinaryService.uploadImageCloddy(file))
+                    .build();
+            results.add(entity);
+        }
+        return results;
     }
-    return results;
-}
+    @Named("toCountriesEntity")
+    protected CountriesEntity toCountriesEntity(String country){
+        var enti = this.countriesRepository.findByName(country).orElseThrow(()-> new AppException(ErrorCode.COUNTRY_NOT_EXISTED));
+        return enti;
+    }
 
 }
