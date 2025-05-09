@@ -29,4 +29,7 @@ public class BookingEntity extends BaseEntity {
     Double totalPrice;
     String status;
     String content;
+    String bookingStatus;
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private PaymentEntity payment;
 }

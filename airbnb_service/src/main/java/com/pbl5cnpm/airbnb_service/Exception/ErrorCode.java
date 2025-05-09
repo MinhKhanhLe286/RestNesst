@@ -22,8 +22,8 @@ public enum ErrorCode {
     TRANSACTION_EXISTED(1013, "transaction exited", HttpStatus.BAD_REQUEST),
     COUNTRY_NOT_EXISTED(1014,"countriy not existed!", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1015, "password invalid", HttpStatus.BAD_REQUEST),
-    PASSWORD_CONFIRM_NOT_MATCH(1016, "password confirm not match", HttpStatus.BAD_REQUEST)
-
+    PASSWORD_CONFIRM_NOT_MATCH(1016, "password confirm not match", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_EXIT(1017,"booking not exits", HttpStatus.BAD_GATEWAY)
     ;
     ErrorCode(int code, String message, HttpStatus httpStatus){
         this.code = code;

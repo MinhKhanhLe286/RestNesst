@@ -20,14 +20,14 @@ public class PaymentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
-    
-    Long amount;
-    String paymentMethod;
+    String payMethod;
     String status;
-    Date startDate;
-    Date endDate;
     @Column(unique = true, nullable = false)
     String transactionId;
     String content;
+
+    // Quan hệ 1-1 với Booking
+    @OneToOne
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
+    private BookingEntity booking;
 }
