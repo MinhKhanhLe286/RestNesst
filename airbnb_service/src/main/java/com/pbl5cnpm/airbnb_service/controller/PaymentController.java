@@ -32,10 +32,14 @@ import com.pbl5cnpm.airbnb_service.dto.Request.PaymentRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.entity.BookingEntity;
 import com.pbl5cnpm.airbnb_service.entity.PaymentEntity;
+import com.pbl5cnpm.airbnb_service.enums.BookingStatus;
+import com.pbl5cnpm.airbnb_service.enums.PaymentMethod;
+import com.pbl5cnpm.airbnb_service.enums.PaymentStatus;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.repository.BookingRepository;
 import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
+import com.pbl5cnpm.airbnb_service.repository.PaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.CreatepaymentService;
 import com.pbl5cnpm.airbnb_service.service.PaymentService;
@@ -47,7 +51,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
     private final CreatepaymentService CreatepaymentService;
     private final BookingRepository bookingRepository;
     @Value("${vnpay.tmnCode}")
@@ -95,11 +99,30 @@ public class PaymentController {
         String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
         Long bookingId = body.getBookingId();
-        BookingEntity bookingEntity = this.bookingRepository.findById(bookingId)
+        BookingEntity bookingEntity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_EXIT));
 
-        String vnp_TxnRef = UUID.randomUUID().toString(); 
-        int vnp_Amount = (int) Math.round(bookingEntity.getTotalPrice() * 100); 
+        String currentStatus = bookingEntity.getBookingStatus();
+
+        if (BookingStatus.PAID.toString().equals(currentStatus)) {
+            throw new AppException(ErrorCode.BOOKING_DIFFERECES_PAID);
+        }
+
+        bookingEntity.setBookingStatus(BookingStatus.CONFIRMED.toString());
+        bookingRepository.save(bookingEntity);
+
+        //
+        PaymentEntity entity = PaymentEntity.builder()
+                .payMethod(PaymentMethod.VNPAY.toString())
+                .status(PaymentStatus.PENDING.toString())
+                .booking(bookingEntity) 
+                .transactionId(UUID.randomUUID().toString()) 
+                .content(body.getContent())
+                .build();
+        entity = this.paymentRepository.save(entity);
+        //
+        String vnp_TxnRef = String.valueOf(entity.getId());
+        int vnp_Amount = (int) Math.round(bookingEntity.getTotalPrice() * 100);
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);

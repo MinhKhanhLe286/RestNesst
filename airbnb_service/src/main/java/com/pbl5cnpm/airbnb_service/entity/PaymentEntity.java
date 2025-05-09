@@ -22,7 +22,6 @@ public class PaymentEntity extends BaseEntity {
     Long id;
     String payMethod;
     String status;
-    @Column(unique = true, nullable = false)
     String transactionId;
     String content;
 
