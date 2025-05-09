@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -41,7 +42,6 @@ import com.pbl5cnpm.airbnb_service.repository.BookingRepository;
 import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.PaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
-import com.pbl5cnpm.airbnb_service.service.CreatepaymentService;
 import com.pbl5cnpm.airbnb_service.service.PaymentService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,8 +51,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
+    private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
-    private final CreatepaymentService CreatepaymentService;
     private final BookingRepository bookingRepository;
     @Value("${vnpay.tmnCode}")
     private String vnp_TmnCode;
@@ -65,6 +65,17 @@ public class PaymentController {
 
     @Value("${vnpay.returnUrl}")
     private String vnp_Returnurl;
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/counts")
+    public ApiResponse<Long> getCounts() {
+        return ApiResponse.<Long>builder()
+                        .code(200)
+                        .message("get counts payments")
+                        .result(this.paymentService.counts())
+                        .build();
+    }
+    
 
     @PostMapping("/create-payment")
     public ApiResponse<String> createPayment(

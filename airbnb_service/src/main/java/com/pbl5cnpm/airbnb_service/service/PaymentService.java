@@ -15,5 +15,7 @@ public class PaymentService {
     private PaymentRepository paymentRepository;
     @Autowired
     private UserRepository userRepository;
-    
+    public Long counts(){
+        return this.paymentRepository.count();
+    }
 }
