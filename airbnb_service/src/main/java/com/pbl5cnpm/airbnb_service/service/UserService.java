@@ -133,4 +133,7 @@ public class UserService {
         }
         return this.mapper.toUserInfor( this.userRepository.save(userEntity));
     }
+    public Long handleCountUser(){
+        return this.userRepository.count();
+    }
 }

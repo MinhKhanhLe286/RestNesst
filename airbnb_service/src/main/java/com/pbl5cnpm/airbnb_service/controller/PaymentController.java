@@ -28,17 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pbl5cnpm.airbnb_service.assistants.HMACutill;
 import com.pbl5cnpm.airbnb_service.dto.Request.CreatePaymentRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
+import com.pbl5cnpm.airbnb_service.entity.PaymentEntity;
 import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.CreatepaymentService;
+import com.pbl5cnpm.airbnb_service.service.PaymentService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    
+    private final PaymentService paymentService;
     private final CreatepaymentService CreatepaymentService;
     @Value("${vnpay.tmnCode}")
     private String vnp_TmnCode;
@@ -58,8 +61,8 @@ public class PaymentController {
             @RequestBody CreatePaymentRequest body,
             HttpServletRequest request) throws UnsupportedEncodingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username =  authentication.getName();      
-        
+        String username = authentication.getName();
+
         if (method.equals("VnPay")) {
             String ipClient = getClientIp(request);
             String toUrl = createVNPay(ipClient, body, username);
@@ -73,12 +76,13 @@ public class PaymentController {
         return null;
     }
 
-    private String createVNPay( String ipClient,CreatePaymentRequest body, String username ) throws UnsupportedEncodingException {
+    private String createVNPay(String ipClient, CreatePaymentRequest body, String username)
+            throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "170000";
         String vnp_TxnRef = this.CreatepaymentService.createPaymentInfo(body, username);
-        String vnp_IpAddr = ipClient; 
+        String vnp_IpAddr = ipClient;
 
         Long amount = body.getAmount();
         String vnp_TxnAmount = String.valueOf(amount * 100);
@@ -139,6 +143,13 @@ public class PaymentController {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    @GetMapping("/my")
+    public List<PaymentEntity> getMethodName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return this.paymentService.getmypayment(username);
     }
 
 }

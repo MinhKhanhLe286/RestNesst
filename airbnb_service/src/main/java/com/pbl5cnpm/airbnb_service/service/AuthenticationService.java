@@ -79,11 +79,22 @@ public class AuthenticationService {
     }
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
-        isValidToken(request.getToken());
-        String idToken = getClaimSet(request.getToken()).getJWTID();
+        if (!isValidToken(request.getToken())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        JWTClaimsSet claims = getClaimSet(request.getToken());
+        String idToken = claims.getJWTID();
+        String type = (String) claims.getClaim("type_token");
+
+        if (!"access".equals(type)) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
         if (this.invalidTokenRepository.findById(idToken).isPresent()) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
+
         return IntrospectResponse.builder().vaild(true).build();
     }
 

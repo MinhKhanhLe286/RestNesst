@@ -63,4 +63,6 @@ public class ListingEntity extends BaseEntity {
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<PaymentEntity> payments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    private List<BookingEntity> bookings = new ArrayList<>();
 }

@@ -57,11 +57,12 @@ public class ListingsServices {
         }
         boolean isAdmin = host.getRoles().stream()
                 .anyMatch(role -> role.getRoleName().equals(RoleName.ADMIN.toString()));
-
-        System.out.println("Check admin ----------------------" + isAdmin);
         entity.setAccess(isAdmin);
 
         var enti = this.listingsRepository.save(entity);
         return this.listingMapper.toResponse(enti);
+    }
+    public Long getCount(){
+        return this.userRepository.count();
     }
 }

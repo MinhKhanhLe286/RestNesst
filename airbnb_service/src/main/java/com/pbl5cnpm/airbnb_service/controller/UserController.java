@@ -45,7 +45,6 @@ public class UserController {
     private final FavoriteService favoriteService;
     private final UserService userService;
 
-
     @PostMapping("/users")
     public ResponseEntity<ApiResponse<UserResponse>> created(@RequestBody @Valid UserRequest request) {
         UserResponse userResponse = userService.handleCreateUser(request);
@@ -85,7 +84,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/users/favorites") // lây full 
+    @GetMapping("/users/favorites") // lây full
     public ApiResponse<UserFavoriteResponse> getMethodName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -128,6 +127,21 @@ public class UserController {
                 .message("Update success")
                 .code(200)
                 .result(this.userService.handleUpdateProfile(request, username))
+                .build();
+    }
+
+    @GetMapping("/users/booked")
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/users/counts")
+    public ApiResponse<Long> countUsser() {
+        return ApiResponse.<Long>builder()
+                .code(200)
+                .message(" users counts ")
+                .result(this.userService.handleCountUser())
                 .build();
     }
 

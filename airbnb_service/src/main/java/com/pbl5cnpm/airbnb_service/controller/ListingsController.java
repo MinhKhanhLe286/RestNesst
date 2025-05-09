@@ -23,6 +23,8 @@ import com.pbl5cnpm.airbnb_service.service.ListingsServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("${api.base.path}")
@@ -61,5 +63,15 @@ public class ListingsController {
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/listings/counts")
+    public ApiResponse<Long> getcounts() {
+        return ApiResponse.<Long>builder()
+                        .code(200)
+                        .message("get count listing")
+                        .result(this.listingsServices.getCount())
+                        .build();
+    }
+    
 
 }
