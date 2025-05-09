@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.JOSEException;
 import com.pbl5cnpm.airbnb_service.dto.Request.FavoriteRequest;
+import com.pbl5cnpm.airbnb_service.dto.Request.PasswordChangeRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserProfileRequset;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
@@ -145,4 +146,12 @@ public class UserController {
                 .build();
     }
 
+    @PutMapping("/users/password")
+    public ApiResponse<UserInfor> changePasss(@RequestBody PasswordChangeRequest request) {
+        return ApiResponse.<UserInfor>builder()
+                .code(200)
+                .message("change password succcessfully!")
+                .result(this.userService.handleChangePass(request))
+                .build();
+    }
 }

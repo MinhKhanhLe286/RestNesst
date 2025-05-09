@@ -15,6 +15,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
+import com.pbl5cnpm.airbnb_service.dto.Request.PasswordChangeRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserProfileRequset;
 import com.pbl5cnpm.airbnb_service.dto.Request.UserRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ListingFavorite;
@@ -60,13 +61,14 @@ public class UserService {
         new Thread(() -> {
             try {
                 String name = request.getFullname();
-                mailerService.sendHtmlEmail(request.getEmail(), "Welcome to Airbnb", "Thank " + name + " for choosing our service!");
+                mailerService.sendHtmlEmail(request.getEmail(), "Welcome to Airbnb",
+                        "Thank " + name + " for choosing our service!");
             } catch (MessagingException e) {
                 log.error("Send mail fail!");
                 e.printStackTrace();
             }
-        }).start(); 
-        
+        }).start();
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         Set<RoleEntity> roles = new HashSet<>();
@@ -80,60 +82,84 @@ public class UserService {
         return mapper.toUserResponse(userRepository.save(userEntity));
     }
 
-    public List<UserResponse> handleGetAll(){
+    public List<UserResponse> handleGetAll() {
         List<UserEntity> users = userRepository.findAll();
         return users.stream()
-            .map(mapper::toUserResponse)
-            .collect(Collectors.toList());
+                .map(mapper::toUserResponse)
+                .collect(Collectors.toList());
     }
-    public String getUserNameJwt(String token) throws ParseException, JOSEException{
+
+    public String getUserNameJwt(String token) throws ParseException, JOSEException {
         JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY);
         SignedJWT jwt = SignedJWT.parse(token);
         boolean verifed = jwt.verify(jwsVerifier);
-        if (!verifed){
+        if (!verifed) {
             return null;
-        }else{
+        } else {
             return jwt.getJWTClaimsSet().getSubject();
         }
     }
-    public UserInfor handleInfor(String token) throws ParseException, JOSEException{
+
+    public UserInfor handleInfor(String token) throws ParseException, JOSEException {
         String username = getUserNameJwt(token);
         UserEntity user = this.userRepository.findByUsername(username)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return this.mapper.toUserInfor(user);
-    } 
-    public UserFavoriteResponse getFavorites(String username){
-        UserEntity user = this.userRepository.findByUsername(username)  
-                            .orElseThrow( () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    public UserFavoriteResponse getFavorites(String username) {
+        UserEntity user = this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Long userId = user.getId();
         List<ListingEntity> favoriteEntity = this.userRepository.findFavorites(userId);
         List<ListingFavorite> favorites = favoriteEntity.stream()
-                    .map(data -> this.listingMapper.toLitingFavorite(data))
-                    .toList();
+                .map(data -> this.listingMapper.toLitingFavorite(data))
+                .toList();
         return UserFavoriteResponse.builder()
                 .userId(userId)
                 .favorites(favorites)
                 .build();
     }
-    public UserInfor handleUpdateProfile(UserProfileRequset profileRequset, String username){
+
+    public UserInfor handleUpdateProfile(UserProfileRequset profileRequset, String username) {
         UserEntity userEntity = this.userRepository.findByUsername(username)
-                                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
-        if(!profileRequset.getEmail().isBlank()){
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if (!profileRequset.getEmail().isBlank()) {
             userEntity.setEmail(profileRequset.getEmail());
         }
-        if(!profileRequset.getFullname().isBlank()){
+        if (!profileRequset.getFullname().isBlank()) {
             userEntity.setFullname(profileRequset.getFullname());
         }
-        if(!profileRequset.getPhone().isBlank()){
+        if (!profileRequset.getPhone().isBlank()) {
             userEntity.setPhone(profileRequset.getPhone());
         }
-        if(profileRequset.getThumnail() != null){
+        if (profileRequset.getThumnail() != null) {
             var url = this.cloudinaryService.uploadImageCloddy(profileRequset.getThumnail());
             userEntity.setThumnailUrl(url);
         }
-        return this.mapper.toUserInfor( this.userRepository.save(userEntity));
+        return this.mapper.toUserInfor(this.userRepository.save(userEntity));
     }
-    public Long handleCountUser(){
+
+    public Long handleCountUser() {
         return this.userRepository.count();
     }
+
+    public UserInfor handleChangePass(PasswordChangeRequest request) {
+        String username = request.getUsername();
+        UserEntity userEntity = this.userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_VALID)); 
+
+        String oldPassword = request.getPassword();
+        if (!this.passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_INVALID);
+        }
+
+        if (!request.getNewPassword().equals(request.getVerifyPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
+        }
+
+        userEntity.setPassword(this.passwordEncoder.encode(request.getNewPassword()));
+        return this.mapper.toUserInfor(this.userRepository.save(userEntity));
+    }
+
 }

@@ -46,10 +46,10 @@ public class ListingsServices {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         ListingEntity entity = this.listingMapper.toEntity(listingRequest);
+        
         entity.setHost(host);
         entity.setDeleted(false);
         entity.setStatus(ListingStatus.ACTIVE.toString());
-        // Gắn lại quan hệ ảnh → listing
         if (entity.getImagesEntities() != null) {
             for (ImagesEntity img : entity.getImagesEntities()) {
                 img.setListingEntity(entity);
