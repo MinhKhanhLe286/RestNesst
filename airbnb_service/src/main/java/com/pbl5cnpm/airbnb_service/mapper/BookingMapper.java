@@ -28,8 +28,7 @@ public abstract class BookingMapper {
         return listingsRepository.findById(listingId)
                 .orElseThrow(() -> new AppException(ErrorCode.LISTING_NOT_EXISTED));
     }
-    //
-    @Mapping(source = "listing.id", target = "listingId")
+    @Mapping(source = "id", target = "bookingId")
     @Mapping(source = "listing.title", target = "title")
     @Mapping(source = "listing.avgStart", target = "avgStart")
     @Mapping(source = "listing.popular", target = "popular")

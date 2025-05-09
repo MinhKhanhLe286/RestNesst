@@ -15,9 +15,5 @@ public class PaymentService {
     private PaymentRepository paymentRepository;
     @Autowired
     private UserRepository userRepository;
-    public List<PaymentEntity> getmypayment(String username){
-        var user = this.userRepository.findByUsername(username).get();
-        
-        return this.paymentRepository.findByUser(user);
-    }
+    
 }

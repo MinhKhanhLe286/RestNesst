@@ -98,8 +98,8 @@ public class PaymentControllerReturn {
         CreatePaymentInfo createPaymentInfo = this.createInfoPaymentRepository.findById(vnp_TxnRef).get();
         PaymentEntity paymentEntity = PaymentEntity.builder()
                                         .amount(createPaymentInfo.getAmount())
-                                        .user(this.userRepository.findById(createPaymentInfo.getUserId()).get())
-                                        .listing(this.listingsRepository.findById(createPaymentInfo.getListingId()).get())
+                                        // .user(this.userRepository.findById(createPaymentInfo.getUserId()).get())
+                                        // .listing(this.listingsRepository.findById(createPaymentInfo.getListingId()).get())
                                         .status(PaymentStatus.SUCCESS.toString())
                                         .transactionId(vnp_TransactionNo)
                                         .startDate(createPaymentInfo.getStartDate())

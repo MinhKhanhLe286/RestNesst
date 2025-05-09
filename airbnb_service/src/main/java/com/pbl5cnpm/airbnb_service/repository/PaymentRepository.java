@@ -14,5 +14,5 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     Optional<PaymentEntity> findByTransactionId(String transactionId);
-    List<PaymentEntity> findByUser(UserEntity user);
+    
 }

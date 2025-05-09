@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingResponse {
-    Long listingId;
+    Long bookingId;
     String title;
     Double avgStart;
     Boolean popular;

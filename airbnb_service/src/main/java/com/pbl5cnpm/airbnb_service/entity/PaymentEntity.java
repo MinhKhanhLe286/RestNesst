@@ -21,13 +21,7 @@ public class PaymentEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    UserEntity user;
-
-    @ManyToOne
-    @JoinColumn(name = "listing_id", nullable = false)
-    ListingEntity listing;
+    
     Long amount;
     String paymentMethod;
     String status;

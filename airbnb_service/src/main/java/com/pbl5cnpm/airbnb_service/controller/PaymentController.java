@@ -145,11 +145,11 @@ public class PaymentController {
         return ip;
     }
 
-    @GetMapping("/my")
-    public List<PaymentEntity> getMethodName() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return this.paymentService.getmypayment(username);
-    }
+    // @GetMapping("/my")
+    // public List<PaymentEntity> getMethodName() {
+    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    //     String username = authentication.getName();
+    //     return this.paymentService.getmypayment(username);
+    // }
 
 }
