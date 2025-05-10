@@ -7,19 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pbl5cnpm.airbnb_service.assistants.HMACutill;
-import com.pbl5cnpm.airbnb_service.dto.Request.CreatePaymentRequest;
 import com.pbl5cnpm.airbnb_service.dto.Request.PaymentRequest;
 import com.pbl5cnpm.airbnb_service.dto.Response.ApiResponse;
 import com.pbl5cnpm.airbnb_service.entity.BookingEntity;
@@ -39,9 +34,7 @@ import com.pbl5cnpm.airbnb_service.enums.PaymentStatus;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
 import com.pbl5cnpm.airbnb_service.repository.BookingRepository;
-import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.PaymentRepository;
-import com.pbl5cnpm.airbnb_service.repository.UserRepository;
 import com.pbl5cnpm.airbnb_service.service.PaymentService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,7 +68,15 @@ public class PaymentController {
                         .result(this.paymentService.counts())
                         .build();
     }
-    
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/amount")
+    public ApiResponse<Double> getAount(){
+        return ApiResponse.<Double>builder()
+                        .code(200)
+                        .message("Get total invoice amount")
+                        .result(this.paymentService.getTotePayment())
+                        .build();
+    }
 
     @PostMapping("/create-payment")
     public ApiResponse<String> createPayment(

@@ -24,6 +24,7 @@ public class ListingsResponse {
     Long id;
     String name;
     String address;
+    String city;
     String country;
     String avgStart;
     List<String> images;

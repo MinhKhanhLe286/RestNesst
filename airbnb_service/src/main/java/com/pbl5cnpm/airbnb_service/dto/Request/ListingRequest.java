@@ -26,6 +26,7 @@ public class ListingRequest {
     String country;
     String city;
     String area;
+    Double price;
     LocalDate startDate;
     LocalDate endDate;
     List<String> amenites;
