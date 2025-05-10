@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pbl5cnpm.airbnb_service.assistants.HMACutill;
+import com.pbl5cnpm.airbnb_service.entity.BookingEntity;
 import com.pbl5cnpm.airbnb_service.entity.PaymentEntity;
+import com.pbl5cnpm.airbnb_service.enums.BookingStatus;
 import com.pbl5cnpm.airbnb_service.enums.PaymentStatus;
 import com.pbl5cnpm.airbnb_service.exception.AppException;
 import com.pbl5cnpm.airbnb_service.exception.ErrorCode;
+import com.pbl5cnpm.airbnb_service.repository.BookingRepository;
 import com.pbl5cnpm.airbnb_service.repository.CreateInfoPaymentRepository;
 import com.pbl5cnpm.airbnb_service.repository.ListingsRepository;
 import com.pbl5cnpm.airbnb_service.repository.PaymentRepository;
@@ -34,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentControllerReturn {
+    private final BookingRepository bookingRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final ListingsRepository listingsRepository;
@@ -104,10 +108,19 @@ public class PaymentControllerReturn {
             model.addAttribute("paymentTime", formatPayDate(vnp_PayDate));
             paymentEntity.setStatus(PaymentStatus.SUCCESS.toString());
             this.paymentRepository.save(paymentEntity);
+
+            BookingEntity booking = paymentEntity.getBooking();
+            booking.setBookingStatus(BookingStatus.PAID.toString());
+            this.bookingRepository.save(booking);
+
             return "vnpay-success";
         } else {
             paymentEntity.setStatus(PaymentStatus.FAILED.toString());
             this.paymentRepository.save(paymentEntity);
+            //
+            BookingEntity booking = paymentEntity.getBooking();
+            booking.setBookingStatus(BookingStatus.FAILED.toString());
+            this.bookingRepository.save(booking);
             model.addAttribute("error", "Thanh toán thất bại. Mã lỗi: " + vnp_ResponseCode);
             return "payment-failed";
         }
