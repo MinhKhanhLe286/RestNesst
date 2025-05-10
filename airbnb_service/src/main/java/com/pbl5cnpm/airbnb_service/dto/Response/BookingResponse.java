@@ -27,4 +27,5 @@ public class BookingResponse {
     LocalDate checkOutDate;
     Double totalPrice;
     String content;
+    String bookingStatus;
 }
